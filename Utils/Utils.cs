@@ -18,7 +18,7 @@ namespace GModMountManager
     {
         public static FileInfo getOwnPath()
         {
-            return new FileInfo(Path.GetFullPath(Application.ExecutablePath));
+            return new FileInfo(Path.GetDirectoryName(Application.ExecutablePath));
         }
         /*[DllImport("User32.dll")]
         public static extern Int32 SetForegroundWindow(int hWnd);*/
@@ -158,7 +158,6 @@ namespace GModMountManager
 
         public static Process StartProcess(string file, string workDir = null, params string[] args)
         {
-            Logger Logger = LogManager.GetCurrentClassLogger();
             ProcessStartInfo proc = new ProcessStartInfo();
             proc.FileName = file;
             proc.Arguments = string.Join(" ", args);

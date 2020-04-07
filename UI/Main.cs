@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Windows.Forms;
 using EpicMorg.SteamPathsLib;
@@ -10,34 +11,22 @@ namespace GModMountManager
 {
     internal partial class Main : Form
     {
-        private MountsConfig _cfg;
-
-        public event EventHandler CfgChanged;
-
-        protected virtual void OnCfgChanged()
-        {
-            CfgChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private MountsConfig cfg
-        {
-            get { return _cfg; }
-            set
-            {
-                _cfg = value;
-                OnCfgChanged();
-            }
-        }
-
+        private MountsConfig cfg;
         private BindingSource source;
 
-        internal Main()
+        private void InvokeUI(Action a)
         {
-            InitializeComponent();
+            BeginInvoke(new MethodInvoker(a));
         }
 
-        private void Main_Load(object sender, EventArgs e)
+        public Main()
         {
+            Logger.Trace("START");
+            if (Program.Arguments.IgnoreSSLErrors)
+            {
+                Logger.Warn("\"--ignoresslerrors\" is set, ignoring SSL Errors!");
+                ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
+            }
             FileInfo cfgFile;
             var GetActiveProcessSteamData = SteamPathsUtil.GetActiveProcessSteamData();
             var GetAllSteamAppManifestData = SteamPathsUtil.GetAllSteamAppManifestData();
@@ -54,17 +43,40 @@ namespace GModMountManager
             }
             cfg = new MountsConfig(cfgFile);
             source = new BindingSource() { DataSource = cfg.Mounts };
+            source.ListChanged += Source_ListChanged;
+
+            InitializeComponent();
+        }
+
+        private void Source_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            Logger.Debug("Mounts changed, saving...");
+            // cfg.save();
+        }
+
+        private void Main_Load(object sender, EventArgs e)
+        {
+            if (Program.config.Sections.ContainsSection("Window"))
+            {
+                var state = Program.config["Window"]["State"]; var loc = Program.config["Window"]["Location"].Split(':'); var size = Program.config["Window"]["Size"].Split(':');
+                Logger.Debug("Was {} Location: {} Size: {}", Program.config["Window"]["State"], loc.ToJson(false), size.ToJson(false));
+                switch (state)
+                {
+                    case "Maximized":
+                        WindowState = FormWindowState.Maximized;
+                        break;
+
+                    default:
+                        Location = new Point(int.Parse(loc[0]), int.Parse(loc[1]));
+                        Size = new Size(int.Parse(size[1]), int.Parse(size[0]));
+                        break;
+                }
+            }
             dataGridView1.AutoGenerateColumns = true;
             dataGridView1.DataSource = source;
             dataGridView1.Columns[1].ReadOnly = true;
             dataGridView1.AutoResizeColumns(); // DataGridViewAutoSizeColumnsMode.Fill
             dataGridView1.StretchLastColumn();
-            CfgChanged += Main_CfgChanged;
-        }
-
-        private void Main_CfgChanged(object sender, EventArgs e)
-        {
-            Console.WriteLine("Has been changed OwO");
         }
 
         private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -102,21 +114,21 @@ namespace GModMountManager
 
         private void dataGridView1_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
         {
-            Console.WriteLine("dataGridView1_CellContextMenuStripNeeded");
+            Logger.Debug("dataGridView1_CellContextMenuStripNeeded");
             DataGridView dgv = (DataGridView)sender;
 
             if (e.RowIndex == -1 || e.ColumnIndex == -1) return;
             foreach (DataGridViewCell cell in dgv.SelectedCells)
             {
-                // Console.WriteLine(cell.OwningRow.DataBoundItem.ToJson());
+                // Logger.Debug(cell.OwningRow.DataBoundItem.ToJson());
             }
             e.ContextMenuStrip = contextMenuStrip1;
-            Console.WriteLine(cfg.ToJson());
+            Logger.Debug(cfg.ToJson());
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-            Console.WriteLine("contextMenuStrip1_Opening");
+            Logger.Debug("contextMenuStrip1_Opening");
             int itemCount = dataGridView1.SelectedRows.Count;
             string voidPaymentText = "&Void Payment"; // to be localized
             if (itemCount > 1)
@@ -159,7 +171,7 @@ namespace GModMountManager
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var dir = Utils.pickFolder("Select game path (like \"Half Life 2/hl2\")");
-            if (!dir.Exists) { MessageBox.Show(dir.FullName, "Invalid path!", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            if (!dir.Exists) { MessageBox.Show("Invalid path!", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
             cfg.Mounts.Add(new Mount(dir.FullName, dir.Name)); source.ResetBindings(false);
         }
     }
