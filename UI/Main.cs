@@ -3,9 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Windows.Forms;
-using EpicMorg.SteamPathsLib;
 
 namespace GModMountManager
 {
@@ -28,19 +26,11 @@ namespace GModMountManager
                 ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) => true;
             }
             FileInfo cfgFile;
-            var GetActiveProcessSteamData = SteamPathsUtil.GetActiveProcessSteamData();
-            var GetAllSteamAppManifestData = SteamPathsUtil.GetAllSteamAppManifestData();
-            var GetLibrarySteamDataList = SteamPathsUtil.GetLibrarySteamDataList();
-            var GetSteamAppsKeyRegistry = SteamPathsUtil.GetSteamAppsKeyRegistry();
-            var GetSteamConfig = SteamPathsUtil.GetSteamConfig();
-            var GetSteamData = SteamPathsUtil.GetSteamData();
-            var gmod = SteamPathsUtil.GetSteamAppDataById(4000);
-            if (!gmod.Installed) cfgFile = Utils.pickFile("Select mount.cfg", filter: "Mount CFG|mount.cfg");
-            else
+            try
             {
-                // var data = SteamPathsUtil.GetSteamAppManifestDataById(4000);
                 cfgFile = new DirectoryInfo(SteamFinder.GetSteamLocation(4000)).CombineFile(MountsConfig.RelativePath);
             }
+            catch (Exception ex) { Logger.Warn("Could not find GMod directory! ({})", ex.Message); cfgFile = Utils.pickFile("Select mount.cfg", filter: "Mount CFG|mount.cfg"); }
             cfg = new MountsConfig(cfgFile);
             source = new BindingSource() { DataSource = cfg.Mounts };
             source.ListChanged += Source_ListChanged;
@@ -74,7 +64,7 @@ namespace GModMountManager
             }
             dataGridView1.AutoGenerateColumns = true;
             dataGridView1.DataSource = source;
-            dataGridView1.Columns[1].ReadOnly = true;
+            dataGridView1.Columns["SourceMod"].ReadOnly = true;
             dataGridView1.AutoResizeColumns(); // DataGridViewAutoSizeColumnsMode.Fill
             dataGridView1.StretchLastColumn();
         }

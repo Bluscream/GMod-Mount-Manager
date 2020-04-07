@@ -11,7 +11,8 @@ namespace GModMountManager
     public class MountsConfig
     {
         public const string RelativePath = "garrysmod/cfg/mount.cfg";
-        public static DirectoryInfo SourcemodsDir = new DirectoryInfo(EpicMorg.SteamPathsLib.SteamPathsUtil.GetSteamData().SourceModInstallPath);
+
+        // public static DirectoryInfo SourcemodsDir = new DirectoryInfo(EpicMorg.SteamPathsLib.SteamPathsUtil.GetSteamData().SourceModInstallPath);
         public FileInfo File { get; internal set; }
 
         public List<Mount> Mounts { get; set; }
