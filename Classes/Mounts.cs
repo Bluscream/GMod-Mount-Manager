@@ -2,6 +2,7 @@
 using Gameloop.Vdf.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -15,23 +16,18 @@ namespace GModMountManager
         // public static DirectoryInfo SourcemodsDir = new DirectoryInfo(EpicMorg.SteamPathsLib.SteamPathsUtil.GetSteamData().SourceModInstallPath);
         public FileInfo File { get; internal set; }
 
-        public List<Mount> Mounts { get; set; }
+        public BindingList<Mount> Mounts { get; set; }
 
         public MountsConfig(FileInfo file)
         {
             if (file is null) file = new FileInfo(RelativePath);
             this.File = file;
-            Logger.Info("Reading mounts from {}", file.FullName.Quote());
+            Logger.Info("Reading mounts from {}", file.FullName);
             var text = this.File.ReadAllText();
             var vp = VdfConvert.Deserialize(text, VdfSerializerSettings.Default);
-            Mounts = vp.Value.Children().Select(x => new Mount(x.Value.Value<string>(), x.Key)).ToList();
+            Mounts = new BindingList<Mount>(vp.Value.Children().Select(x => new Mount(x.Value.Value<string>(), x.Key)).ToList());
             Logger.Info("Read {} mounts successfully", Mounts.Count);
-            Logger.Trace(Mounts.ToJson());
-        }
-
-        public MountsConfig(List<Mount> mounts)
-        {
-            this.Mounts = mounts;
+            // Logger.Trace(Mounts.ToJson());
         }
 
         public void save()
@@ -47,7 +43,7 @@ namespace GModMountManager
                 Logger.Trace("Backup file does not exist or does not contain current content, copying {} to {}", File.Name, bakfile.Name);
                 File.CopyTo(bakfile.FullName);
             }
-            Logger.Trace("Saving to {}", File.FullName.Quote());
+            Logger.Trace("Saving to {}", File.FullName);
             File.WriteAllText(str);
         }
     }

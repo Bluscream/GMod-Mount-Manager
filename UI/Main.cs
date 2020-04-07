@@ -160,9 +160,36 @@ namespace GModMountManager
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (pickMountDir() is var dir && dir != null)
+                cfg.Mounts.Add(new Mount(dir.FullName, dir.Name)); // source.ResetBindings(false);
+        }
+
+        private DirectoryInfo pickMountDir()
+        {
             var dir = Utils.pickFolder("Select game path (like \"Half Life 2/hl2\")");
-            if (!dir.Exists) { MessageBox.Show("Invalid path!", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-            cfg.Mounts.Add(new Mount(dir.FullName, dir.Name)); source.ResetBindings(false);
+            if (!dir.Exists) { MessageBox.Show("Invalid path!", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error); return null; }
+            return dir;
+        }
+
+        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (pickMountDir() is var dir && dir != null)
+            {
+                ((Mount)dataGridView1.SelectedRows[0].DataBoundItem).Path = dir;
+            }
+        }
+
+        private void enableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show($"Are you sure you want to remove these {dataGridView1.SelectedRows.Count} mounts?", "Delete mounts?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                cfg.Mounts.Remove((Mount)row.DataBoundItem);
+            }
         }
     }
 }
