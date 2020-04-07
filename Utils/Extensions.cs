@@ -113,6 +113,11 @@ namespace GModMountManager
             return new DirectoryInfo(final);
         }
 
+        public static void ShowInExplorer(this DirectoryInfo dir)
+        {
+            Utils.StartProcess("explorer.exe", null, dir.FullName.Quote());
+        }
+
         #endregion DirectoryInfo
 
         #region FileInfo
@@ -161,6 +166,11 @@ namespace GModMountManager
 
         public static List<string> ReadAllLines(this FileInfo file) => File.ReadAllLines(file.FullName).ToList();
 
+        public static void ShowInExplorer(this FileInfo file)
+        {
+            Utils.StartProcess("explorer.exe", null, "/select, " + file.FullName.Quote());
+        }
+
         #endregion FileInfo
 
         #region UI
@@ -174,6 +184,13 @@ namespace GModMountManager
                 foreach (var child in GetAllChilds(node.Nodes))
                     yield return child;
             }
+        }
+
+        public static void StretchLastColumn(this DataGridView dataGridView)
+        {
+            var lastColIndex = dataGridView.Columns.Count - 1;
+            var lastCol = dataGridView.Columns[lastColIndex];
+            lastCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         #endregion UI

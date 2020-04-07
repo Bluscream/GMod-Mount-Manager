@@ -10,17 +10,18 @@ namespace GModMountManager
 {
     public class MountsConfig
     {
+        public const string RelativePath = "garrysmod/cfg/mount.cfg";
         public FileInfo File { get; internal set; }
 
         public List<Mount> Mounts { get; set; }
 
         public MountsConfig(FileInfo file)
         {
-            if (file is null) file = new FileInfo("garrysmod/cfg/mount.cfg");
+            if (file is null) file = new FileInfo(RelativePath);
             this.File = file;
             var text = this.File.ReadAllText();
             var vp = VdfConvert.Deserialize(text, VdfSerializerSettings.Default);
-            Mounts = vp.Value.Children().Select(x => new Mount(x.Key, x.Value.Value<string>())).ToList();
+            Mounts = vp.Value.Children().Select(x => new Mount(x.Value.Value<string>(), x.Key)).ToList();
         }
 
         public MountsConfig(List<Mount> mounts)
@@ -41,16 +42,17 @@ namespace GModMountManager
     public class Mount
     {
         // [JsonIgnore]
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         public bool isSourceMod { get; set; }
 
         public string Name { get; set; }
         public DirectoryInfo Path { get; set; }
 
-        public Mount(string name, string path)
+        public Mount(string path, string name = null)
         {
-            this.Name = name; this.Path = new DirectoryInfo(path);
+            Path = new DirectoryInfo(path);
+            Name = name ?? Path.Name; 
         }
     }
 }

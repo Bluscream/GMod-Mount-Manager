@@ -1,24 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
-using Gameloop.Vdf;
-using Gameloop.Vdf.JsonConverter;
-using Gameloop.Vdf.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using EpicMorg.SteamPathsLib;
 
 namespace GModMountManager
 {
     internal partial class Main : Form
     {
-        private MountsConfig cfg;
+        private MountsConfig _cfg;
+
+        public event EventHandler CfgChanged;
+
+        protected virtual void OnCfgChanged()
+        {
+            CfgChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private MountsConfig cfg
+        {
+            get { return _cfg; }
+            set
+            {
+                _cfg = value;
+                OnCfgChanged();
+            }
+        }
+
+        private BindingSource source;
 
         internal Main()
         {
@@ -27,12 +38,33 @@ namespace GModMountManager
 
         private void Main_Load(object sender, EventArgs e)
         {
-            cfg = new MountsConfig(new FileInfo(@"G:\Steam\steamapps\common\GarrysMod\garrysmod\cfg\mount.cfg"));
-            var source = new BindingSource() { DataSource = cfg.Mounts };
+            FileInfo cfgFile;
+            var GetActiveProcessSteamData = SteamPathsUtil.GetActiveProcessSteamData();
+            var GetAllSteamAppManifestData = SteamPathsUtil.GetAllSteamAppManifestData();
+            var GetLibrarySteamDataList = SteamPathsUtil.GetLibrarySteamDataList();
+            var GetSteamAppsKeyRegistry = SteamPathsUtil.GetSteamAppsKeyRegistry();
+            var GetSteamConfig = SteamPathsUtil.GetSteamConfig();
+            var GetSteamData = SteamPathsUtil.GetSteamData();
+            var gmod = SteamPathsUtil.GetSteamAppDataById(4000);
+            if (!gmod.Installed) cfgFile = Utils.pickFile("Select mount.cfg", filter: "Mount CFG|mount.cfg");
+            else
+            {
+                // var data = SteamPathsUtil.GetSteamAppManifestDataById(4000);
+                cfgFile = new DirectoryInfo(SteamFinder.GetSteamLocation(4000)).CombineFile(MountsConfig.RelativePath);
+            }
+            cfg = new MountsConfig(cfgFile);
+            source = new BindingSource() { DataSource = cfg.Mounts };
             dataGridView1.AutoGenerateColumns = true;
             dataGridView1.DataSource = source;
             dataGridView1.Columns[1].ReadOnly = true;
             dataGridView1.AutoResizeColumns(); // DataGridViewAutoSizeColumnsMode.Fill
+            dataGridView1.StretchLastColumn();
+            CfgChanged += Main_CfgChanged;
+        }
+
+        private void Main_CfgChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("Has been changed OwO");
         }
 
         private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -118,6 +150,17 @@ namespace GModMountManager
                     //do Work
                 }
             }
+        }
+
+        private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void addToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dir = Utils.pickFolder("Select game path (like \"Half Life 2/hl2\")");
+            if (!dir.Exists) { MessageBox.Show(dir.FullName, "Invalid path!", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            cfg.Mounts.Add(new Mount(dir.FullName, dir.Name)); source.ResetBindings(false);
         }
     }
 }
