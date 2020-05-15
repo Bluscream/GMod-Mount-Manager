@@ -216,5 +216,11 @@ namespace GModMountManager
                 ((Mount)row.DataBoundItem).Path.ShowInExplorer();
             }
         }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Saving is not possible until \"https://github.com/shravan2x/Gameloop.Vdf/issues/18\" is solved", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Clipboard.SetText(cfg.Mounts.ToJson());
+        }
     }
 }
