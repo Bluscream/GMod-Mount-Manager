@@ -31,11 +31,21 @@ namespace GModMountManager
                 cfgFile = new DirectoryInfo(SteamFinder.GetSteamLocation(4000)).CombineFile(MountsConfig.RelativePath);
             }
             catch (Exception ex) { Logger.Warn("Could not find GMod directory! ({})", ex.Message); cfgFile = Utils.pickFile("Select mount.cfg", filter: "Mount CFG|mount.cfg"); }
+            InitializeComponent();
+            LoadMountsCFG(cfgFile);
+        }
+
+        public void LoadMountsCFG(FileInfo cfgFile)
+        {
             cfg = new MountsConfig(cfgFile);
             source = new BindingSource() { DataSource = cfg.Mounts };
             source.ListChanged += Source_ListChanged;
 
-            InitializeComponent();
+            dataGridView1.AutoGenerateColumns = true;
+            dataGridView1.DataSource = source;
+            dataGridView1.Columns["SourceMod"].ReadOnly = true;
+            dataGridView1.AutoResizeColumns(); // DataGridViewAutoSizeColumnsMode.Fill
+            dataGridView1.StretchLastColumn();
         }
 
         private void Source_ListChanged(object sender, ListChangedEventArgs e)
@@ -62,11 +72,6 @@ namespace GModMountManager
                         break;
                 }
             }
-            dataGridView1.AutoGenerateColumns = true;
-            dataGridView1.DataSource = source;
-            dataGridView1.Columns["SourceMod"].ReadOnly = true;
-            dataGridView1.AutoResizeColumns(); // DataGridViewAutoSizeColumnsMode.Fill
-            dataGridView1.StretchLastColumn();
         }
 
         private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -189,6 +194,26 @@ namespace GModMountManager
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
             {
                 cfg.Mounts.Remove((Mount)row.DataBoundItem);
+            }
+        }
+
+        private void editToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Utils.StartProcess(cfg.File);
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var file = Utils.pickFile("Select mount.cfg", cfg.File.Directory.FullName, "mount.cfg|mount.cfg|*.cfg|*.cfg");
+            if (!file.Exists) { MessageBox.Show("Invalid path!", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            LoadMountsCFG(file);
+        }
+
+        private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                ((Mount)row.DataBoundItem).Path.ShowInExplorer();
             }
         }
     }
