@@ -15,8 +15,11 @@ namespace GModMountManager.UI
 {
     public partial class Search : Form
     {
-        public Search()
+        private List<Mount> already_mounted;
+
+        public Search(List<Mount> already_mounted)
         {
+            this.already_mounted = already_mounted;
             InitializeComponent();
         }
 
@@ -34,7 +37,7 @@ namespace GModMountManager.UI
         {
             foreach (DriveInfo Info in DriveInfo.GetDrives().Where(x => x.IsReady))
             {
-                lst_drives.Items.Add(new Drive() { Info = Info }, true);
+                lst_drives.Items.Add(new Drive() { Info = Info }, Info.DriveType == DriveType.Fixed);
             }
         }
 
@@ -43,7 +46,7 @@ namespace GModMountManager.UI
             var dir = Utils.pickFolder("Select Folder to search...");
             if (dir is null) return;
             this.Hide();
-            new SearchResults(dir).ShowDialog();
+            new SearchResults(dir, already_mounted).ShowDialog();
             this.Close();
         }
 
@@ -52,7 +55,7 @@ namespace GModMountManager.UI
             var l = lst_drives.CheckedItems.Cast<Drive>().Select(a => a.Info).ToList();
             if (l.Count < 1) return;
             this.Hide();
-            new SearchResults(l).ShowDialog();
+            new SearchResults(l, already_mounted).ShowDialog();
             this.Close();
         }
     }

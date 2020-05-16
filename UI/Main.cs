@@ -158,7 +158,7 @@ namespace GModMountManager
 
         private void searchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new UI.Search().ShowDialog();
+            new UI.Search(cfg.Mounts.ToList()).ShowDialog();
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)

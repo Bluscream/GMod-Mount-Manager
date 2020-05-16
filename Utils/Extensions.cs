@@ -188,6 +188,7 @@ namespace GModMountManager
 
         public static void StretchLastColumn(this DataGridView dataGridView)
         {
+            dataGridView.AutoResizeColumns();
             var lastColIndex = dataGridView.Columns.Count - 1;
             var lastCol = dataGridView.Columns[lastColIndex];
             lastCol.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;

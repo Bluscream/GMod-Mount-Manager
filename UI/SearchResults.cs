@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 
 namespace GModMountManager.UI
 {
@@ -14,17 +15,21 @@ namespace GModMountManager.UI
         public List<DriveInfo> Drives;
         public DirectoryInfo Path;
         private BindingSource source;
-        private ObservableCollection<Mount> Results = new ObservableCollection<Mount>();
+        private System.ComponentModel.BindingList<Mount> Results = new System.ComponentModel.BindingList<Mount>();
+        private List<Mount> already_mounted;
+        private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 
-        public SearchResults(List<DriveInfo> drives)
+        public SearchResults(List<DriveInfo> drives, List<Mount> already_mounted)
         {
             Drives = drives;
+            this.already_mounted = already_mounted;
             InitializeComponent();
         }
 
-        public SearchResults(DirectoryInfo path)
+        public SearchResults(DirectoryInfo path, List<Mount> already_mounted)
         {
             Path = path;
+            this.already_mounted = already_mounted;
             InitializeComponent();
         }
 
@@ -34,9 +39,7 @@ namespace GModMountManager.UI
 
             lst_results.AutoGenerateColumns = true;
             lst_results.DataSource = source;
-            // lst_results.Columns["SourceMod"].ReadOnly = true;
-            lst_results.AutoResizeColumns();
-            // lst_results.StretchLastColumn();
+
             if (Path != null)
             {
                 Logger.Info("Searching {}", Path.FullName);
@@ -46,37 +49,64 @@ namespace GModMountManager.UI
             {
                 foreach (DriveInfo drive in Drives)
                 {
-                    Logger.Info("Searching drive \"{}\" ({})", drive.VolumeLabel, drive.Name);
+                    Logger.Info("Searching drive {} ({})", drive.VolumeLabel, drive.Name);
+                    Logger.Info(drive.RootDirectory.ToJson());
                     await Task.Run(SearchDirectory(drive.RootDirectory));
                 }
             }
             Logger.Info("Finished searching");
-            lst_results.DataSource = source;
+            Text = $"Found {Results.Count} new games";
+            lbl_status.Text = $"Finished searching, found {Results.Count} new games";
+            Logger.Debug(Results.ToJson(false));
+            // lst_results.DataSource = source;
             lst_results.Columns["SourceMod"].ReadOnly = true;
-            lst_results.AutoResizeColumns();
         }
 
         public Action SearchDirectory(DirectoryInfo directory)
         {
             return () =>
               {
-                  try
+                  Queue<DirectoryInfo> folders = new Queue<DirectoryInfo>();
+                  var uik = false;
+                  folders.Enqueue(directory);
+                  var _already_mounted = already_mounted.Select(a => a.Name);
+                  while (folders.Count != 0)
                   {
-                      foreach (var file in directory.GetFiles("gameinfo.txt", SearchOption.AllDirectories))
+                      try
                       {
-                          var mount = new Mount(file.DirectoryName, file.Directory.Name);
-                          Logger.Debug("Found Game: {}", mount.Path);
-                          Results.Add(mount);
-                          // lst_results.DataSource = null;
-                          // lst_results.DataSource = source;
+                          var currentFolder = folders.Dequeue();
+                          _dispatcher.Invoke(() => lbl_status.Text = $"Searching Folder {currentFolder.FullName}");
+                          foreach (var file in currentFolder.GetFiles("gameinfo.txt", System.IO.SearchOption.TopDirectoryOnly))
+                          {
+                              if (_already_mounted.Contains(currentFolder.Name))
+                              {
+                                  Logger.Debug("Found already mounted game: {}", currentFolder.FullName);
+                                  continue;
+                              }
+                              var mount = new Mount(file.DirectoryName, currentFolder.Name);
+                              Logger.Debug("Found Game: {}", currentFolder.FullName);
+                              _dispatcher.Invoke(() => Results.Add(mount));
+                              if (!uik) { uik = true; _dispatcher.Invoke(() => lst_results.StretchLastColumn()); }
+                              // _dispatcher.Invoke(() => Text = $"Searching in {currentFolder.Name.Quote()} - {Results.Count} Results");
+                              _dispatcher.Invoke(() => toolStripProgressBar1.ProgressBar.Value++);
+                          }
+
+                          foreach (var _current in currentFolder.GetDirectories("*", System.IO.SearchOption.TopDirectoryOnly))
+                          {
+                              folders.Enqueue(_current);
+                          }
                       }
-                      // Logger.Warn(Results.ToJson(false));
+                      catch (Exception ex)
+                      {
+                          if (ex is UnauthorizedAccessException || ex is DirectoryNotFoundException)
+                          {
+                          }
+                          else
+                          {
+                              Logger.Error(ex.ToString());
+                          }
+                      }
                   }
-                  catch (UnauthorizedAccessException ex)
-                  {
-                      Logger.Trace(ex.Message);
-                  }
-                  // lst_results.StretchLastColumn();
               };
         }
     }
