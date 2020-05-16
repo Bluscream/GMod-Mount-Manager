@@ -43,7 +43,7 @@ namespace GModMountManager.Classes
             if (!GameInfoPath.Exists) throw new System.Exception("Could not find gameinfo.txt");
             try
             {
-                VProperty _gameInfo = VdfConvert.Deserialize(GameInfoPath.FullName);
+                VProperty _gameInfo = VdfConvert.Deserialize(File.ReadAllText(GameInfoPath.FullName));
                 GameInfo gi = VTokenExtensions.ToJson(_gameInfo).ToObject<GameInfo>();
                 Name = gi.Game;
                 if (Name.IsNullOrWhiteSpace()) Name = gi.Name;

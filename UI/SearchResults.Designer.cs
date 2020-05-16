@@ -28,36 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.lst_results = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.lst_results)).BeginInit();
             this.SuspendLayout();
             // 
-            // dataGridView1
+            // lst_results
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(852, 530);
-            this.dataGridView1.TabIndex = 3;
+            this.lst_results.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.lst_results.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lst_results.Location = new System.Drawing.Point(0, 0);
+            this.lst_results.Name = "lst_results";
+            this.lst_results.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.lst_results.Size = new System.Drawing.Size(852, 530);
+            this.lst_results.TabIndex = 3;
             // 
             // SearchResults
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(852, 530);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.lst_results);
             this.Name = "SearchResults";
             this.Text = "Search Results";
             this.Load += new System.EventHandler(this.SearchGames_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lst_results)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView lst_results;
     }
 }

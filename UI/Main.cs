@@ -170,7 +170,7 @@ namespace GModMountManager
         private DirectoryInfo pickMountDir()
         {
             var dir = Utils.pickFolder("Select game path (like \"Half Life 2/hl2\")");
-            if (!dir.Exists) { MessageBox.Show("Invalid path!", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error); return null; }
+            if (dir is null || !dir.Exists) { MessageBox.Show("Invalid path!", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error); return null; }
             return dir;
         }
 

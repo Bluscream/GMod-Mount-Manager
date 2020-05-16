@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.Net;
 using System.Globalization;
 using NLog;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace GModMountManager
 {
@@ -162,11 +161,11 @@ namespace GModMountManager
 
         public static DirectoryInfo pickFolder(string title = null, string initialDirectory = null)
         {
-            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dialog = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog();
             if (title != null) dialog.Title = title;
             dialog.IsFolderPicker = true;
             dialog.DefaultDirectory = initialDirectory ?? "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
-            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            if (dialog.ShowDialog() == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
             {
                 var dir = new DirectoryInfo(dialog.FileName);
                 if (dir.Exists) return dir;
