@@ -140,6 +140,27 @@ namespace GModMountManager
             }
         }
 
+        public static FileInfo saveFile(string title = null, string initialDirectory = null, string filter = null, string content = null)
+        {
+            using (var fileDialog = new SaveFileDialog())
+            {
+                if (title != null) fileDialog.Title = title;
+                fileDialog.InitialDirectory = initialDirectory ?? "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
+                if (filter != null) fileDialog.Filter = filter;
+                var result = fileDialog.ShowDialog();
+                if (result != DialogResult.OK || fileDialog.FileName.IsNullOrWhiteSpace()) return null;
+                if (content != null)
+                {
+                    using (var fileStream = fileDialog.OpenFile())
+                    {
+                        byte[] info = new UTF8Encoding(true).GetBytes(content);
+                        fileStream.Write(info, 0, info.Length);
+                    }
+                }
+                return new FileInfo(fileDialog.FileName);
+            }
+        }
+
         public static DirectoryInfo pickFolder(string title = null, string initialDirectory = null)
         {
             CommonOpenFileDialog dialog = new CommonOpenFileDialog();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GModMountManager.Classes;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -118,7 +119,7 @@ namespace GModMountManager
                 // Logger.Debug(cell.OwningRow.DataBoundItem.ToJson());
             }
             e.ContextMenuStrip = contextMenuStrip1;
-            Logger.Debug(cfg.ToJson());
+            // Logger.Trace(cfg.ToJson());
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -221,6 +222,17 @@ namespace GModMountManager
         {
             MessageBox.Show("Saving is not possible until \"https://github.com/shravan2x/Gameloop.Vdf/issues/18\" is solved", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             Clipboard.SetText(cfg.Mounts.ToJson());
+        }
+
+        private void createMapPoolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                var mount = (Mount)row.DataBoundItem;
+                var game = new Game(mount.Path);
+                Logger.Debug(game.ToJson());
+                new UI.CreateMapPool(game).ShowDialog();
+            }
         }
     }
 }

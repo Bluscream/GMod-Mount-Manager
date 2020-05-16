@@ -244,6 +244,11 @@ namespace GModMountManager
             return string.IsNullOrEmpty(source);
         }
 
+        public static bool IsNullOrWhiteSpace(this string source)
+        {
+            return string.IsNullOrWhiteSpace(source);
+        }
+
         public static string[] Split(this string source, string split, int count = -1, StringSplitOptions options = StringSplitOptions.None)
         {
             if (count != -1) return source.Split(new string[] { split }, count, options);

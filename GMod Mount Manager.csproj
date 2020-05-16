@@ -107,7 +107,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\GameInfo.cs" />
     <Compile Include="Classes\Mounts.cs" />
+    <Compile Include="UI\CreateMapPool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\CreateMapPool.Designer.cs">
+      <DependentUpon>CreateMapPool.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,6 +139,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UI\CreateMapPool.resx">
+      <DependentUpon>CreateMapPool.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
