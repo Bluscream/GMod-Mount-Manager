@@ -1,112 +1,149 @@
-﻿using Gameloop.Vdf;
-using Gameloop.Vdf.Linq;
-using Gameloop.Vdf.JsonConverter;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using NLog;
+﻿using Newtonsoft.Json;
 using System;
+using Newtonsoft.Json.Converters;
+using System.Globalization;
 
 namespace GModMountManager.Classes
 {
-    public class Game
+    public partial class GameInfo2
     {
-        public FileInfo GameInfoPath { get; set; }
-        public string Name { get; set; }
-        public string Icon { get; set; }
-        public string Developer { get; set; }
-        public string Homepage { get; set; }
-        public GameType Type { get; set; } = GameType.UNKNOWN;
-        public bool SupportsVR { get; set; }
-        public List<Map> Maps { get; set; } = new List<Map>();
-
-        public Game(DirectoryInfo gameDir)
-        {
-            var maplistfile = gameDir.CombineFile("maplist.txt");
-            var maplist = new List<string>();
-            if (maplistfile.Exists)
-            {
-                maplist = maplistfile.ReadAllLines();
-                maplist.ForEach(a => a.ToLower());
-            }
-            foreach (var map in gameDir.Combine("maps").GetFiles("*.bsp"))
-            {
-                var _map = new Map(map);
-                _map.Order = maplist.FindIndex(a => a == _map.Name);
-                Maps.Add(_map);
-            }
-            Maps.Sort((x, y) => x.Order.CompareTo(y.Order));
-            GameInfoPath = gameDir.CombineFile("gameinfo.txt");
-            if (!GameInfoPath.Exists) throw new System.Exception("Could not find gameinfo.txt");
-            try
-            {
-                VProperty _gameInfo = VdfConvert.Deserialize(File.ReadAllText(GameInfoPath.FullName));
-                GameInfo gi = VTokenExtensions.ToJson(_gameInfo).ToObject<GameInfo>();
-                Name = gi.Game;
-                if (Name.IsNullOrWhiteSpace()) Name = gi.Name;
-                if (Name.IsNullOrWhiteSpace()) Name = gi.Title;
-                if (Name.IsNullOrWhiteSpace()) Name = gi.Title2;
-                Icon = gi.Icon;
-                Developer = gi.Developer;
-                Homepage = gi.Homepage;
-                if (Homepage.IsNullOrWhiteSpace()) Name = gi.Developer_url;
-                if (gi.Type == "singleplayer_only") Type = GameType.SINGLEPLAYER_ONLY;
-                else if (gi.Type == "multiplayer_only") Type = GameType.MULTIPLAYER_ONLY;
-                SupportsVR = gi.SupportsVR;
-                foreach (var map in Maps)
-                {
-                    map.Hidden = gi.Hidden_maps.ContainsKey(map.Name);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex.ToString());
-                Name = gameDir.Name;
-            }
-        }
-    }
-
-    public enum GameType
-    {
-        UNKNOWN,
-        SINGLEPLAYER_ONLY,
-        MULTIPLAYER_ONLY
-    }
-
-    public class Map
-    {
-        public int Order { get; set; } = -1;
-
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [Browsable(false)]
-        public bool Hidden { get; set; }
-
-        [Browsable(false)]
-        public FileInfo File { get; set; }
-
-        public Map(FileInfo file)
-        {
-            Name = file.FileNameWithoutExtension().ToLower();
-            File = file;
-        }
-    }
-
-    public class GameInfo
-    {
-        public string Name { get; set; }
+        [JsonProperty("game", NullValueHandling = NullValueHandling.Ignore)]
         public string Game { get; set; }
+
+        [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
         public string Title { get; set; }
+
+        [JsonProperty("title2", NullValueHandling = NullValueHandling.Ignore)]
         public string Title2 { get; set; }
+
+        [JsonProperty("icon", NullValueHandling = NullValueHandling.Ignore)]
         public string Icon { get; set; }
+
+        [JsonProperty("gamelogo", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? Gamelogo { get; set; }
+
+        [JsonProperty("developer", NullValueHandling = NullValueHandling.Ignore)]
         public string Developer { get; set; }
-        public string Developer_url { get; set; }
-        public string Homepage { get; set; }
+
+        [JsonProperty("developer_url", NullValueHandling = NullValueHandling.Ignore)]
+        public Uri DeveloperUrl { get; set; }
+
+        [JsonProperty("homepage", NullValueHandling = NullValueHandling.Ignore)]
+        public Uri Homepage { get; set; }
+
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
-        public bool SupportsVR { get; set; }
-        public Dictionary<string, bool> Hidden_maps { get; set; }
+
+        [JsonProperty("SupportsDX8", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? SupportsDx8 { get; set; }
+
+        [JsonProperty("SupportsXbox360", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? SupportsXbox360 { get; set; }
+
+        [JsonProperty("nomodels", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? Nomodels { get; set; }
+
+        [JsonProperty("supportsvr", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? SupportsVR { get; set; }
+
+        [JsonProperty("nocrosshair", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? Nocrosshair { get; set; }
+
+        [JsonProperty("GameData", NullValueHandling = NullValueHandling.Ignore)]
+        public string GameData { get; set; }
+
+        [JsonProperty("InstancePath", NullValueHandling = NullValueHandling.Ignore)]
+        public string InstancePath { get; set; }
+
+        [JsonProperty("FileSystem", NullValueHandling = NullValueHandling.Ignore)]
+        public FileSystem FileSystem { get; set; }
+    }
+
+    public partial class FileSystem
+    {
+        [JsonProperty("SteamAppId", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? SteamAppId { get; set; }
+
+        [JsonProperty("ToolsAppId", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(ParseStringConverter))]
+        public long? ToolsAppId { get; set; }
+
+        [JsonProperty("SearchPaths", NullValueHandling = NullValueHandling.Ignore)]
+        public SearchPaths SearchPaths { get; set; }
+    }
+
+    public partial class SearchPaths
+    {
+        [JsonProperty("game+mod", NullValueHandling = NullValueHandling.Ignore)]
+        public string GameMod { get; set; }
+
+        [JsonProperty("game", NullValueHandling = NullValueHandling.Ignore)]
+        public string Game { get; set; }
+
+        [JsonProperty("platform", NullValueHandling = NullValueHandling.Ignore)]
+        public string Platform { get; set; }
+
+        [JsonProperty("game+mod+mod_write+default_write_path", NullValueHandling = NullValueHandling.Ignore)]
+        public string GameModModWriteDefaultWritePath { get; set; }
+
+        [JsonProperty("gamebin", NullValueHandling = NullValueHandling.Ignore)]
+        public string Gamebin { get; set; }
+
+        [JsonProperty("game+game_write", NullValueHandling = NullValueHandling.Ignore)]
+        public string GameGameWrite { get; set; }
+    }
+
+    internal static class Converter
+    {
+        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        {
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            DateParseHandling = DateParseHandling.None,
+            Converters =
+            {
+                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            },
+        };
+    }
+
+    internal class ParseStringConverter : JsonConverter
+    {
+        public override bool CanConvert(Type t) => t == typeof(long) || t == typeof(long?);
+
+        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Null) return null;
+            var value = serializer.Deserialize<string>(reader);
+            long l;
+            if (Int64.TryParse(value, out l))
+            {
+                return l;
+            }
+            throw new Exception("Cannot unmarshal type long");
+        }
+
+        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
+        {
+            if (untypedValue == null)
+            {
+                serializer.Serialize(writer, null);
+                return;
+            }
+            var value = (long)untypedValue;
+            serializer.Serialize(writer, value.ToString());
+            return;
+        }
+
+        public static readonly ParseStringConverter Singleton = new ParseStringConverter();
     }
 }

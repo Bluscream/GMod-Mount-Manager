@@ -110,6 +110,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Game.cs" />
     <Compile Include="Classes\GameInfo.cs" />
     <Compile Include="Classes\Mounts.cs" />
     <Compile Include="UI\CreateMapPool.cs">

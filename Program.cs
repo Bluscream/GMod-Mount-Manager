@@ -35,7 +35,7 @@ namespace GModMountManager
             var assembly = System.Reflection.Assembly.GetEntryAssembly().GetName();
             Logger.Debug("{0} v{1} ({2}) with args: {3}", assembly.Name, assembly.Version, assembly.ProcessorArchitecture, string.Join(" ", args));
             Parser.Default.ParseArguments<Options>(args).WithParsed(o => Arguments = o).WithNotParsed(o => Logger.Error("Unable to parse arguments: {0}", o.First().Tag));
-            Logger.Trace("Parsed arguments: {}", Arguments.ToJson());
+            Logger.Trace("Parsed arguments: {}", Arguments.ToJSON());
             if (Arguments.ConsoleEnabled) ExternalConsole.InitConsole();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -48,7 +48,7 @@ namespace GModMountManager
         private static void OnProcessExit(object sender, EventArgs e)
         {
             Logger.Log("Exiting...");
-            Logger.Trace(config.ToJson());
+            Logger.Trace(config.ToJSON());
             Config.Save(config);
             ExternalConsole.Dispose();
             Application.Exit();

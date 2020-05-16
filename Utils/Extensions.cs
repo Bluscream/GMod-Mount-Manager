@@ -198,7 +198,7 @@ namespace GModMountManager
 
         #region Object
 
-        public static string ToJson(this object obj, bool indented = true)
+        public static string ToJSON(this object obj, bool indented = true)
         {
             // return JsonConvert.SerializeObject(obj, (indented ? Formatting.Indented : Formatting.None), new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, DateFormatString = "yyyy-MM-dd hh:mm:ss"}) ; // , new JsonConverter[] { new StringEnumConverter() }
             return JsonConvert.SerializeObject(obj, (indented ? Formatting.Indented : Formatting.None), new JsonConverter[] { new StringEnumConverter(), new IPAddressConverter(), new IPEndPointConverter() });

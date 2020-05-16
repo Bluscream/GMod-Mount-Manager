@@ -1,4 +1,8 @@
-﻿using GModMountManager.Classes;
+﻿using Gameloop.Vdf;
+using Gameloop.Vdf.JsonConverter;
+using Gameloop.Vdf.Linq;
+using GModMountManager.Classes;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -62,7 +66,7 @@ namespace GModMountManager
             if (Program.config.Sections.ContainsSection("Window"))
             {
                 var state = Program.config["Window"]["State"]; var loc = Program.config["Window"]["Location"].Split(':'); var size = Program.config["Window"]["Size"].Split(':');
-                Logger.Debug("Was {} Location: {} Size: {}", Program.config["Window"]["State"], loc.ToJson(false), size.ToJson(false));
+                Logger.Debug("Was {} Location: {} Size: {}", Program.config["Window"]["State"], loc.ToJSON(false), size.ToJSON(false));
                 switch (state)
                 {
                     case "Maximized":
@@ -118,10 +122,10 @@ namespace GModMountManager
             if (e.RowIndex == -1 || e.ColumnIndex == -1) return;
             foreach (DataGridViewCell cell in dgv.SelectedCells)
             {
-                // Logger.Debug(cell.OwningRow.DataBoundItem.ToJson());
+                // Logger.Debug(cell.OwningRow.DataBoundItem.ToJSON());
             }
             e.ContextMenuStrip = contextMenuStrip1;
-            // Logger.Trace(cfg.ToJson());
+            // Logger.Trace(cfg.ToJSON());
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -218,7 +222,8 @@ namespace GModMountManager
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Saving is not possible until \"https://github.com/shravan2x/Gameloop.Vdf/issues/18\" is solved", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Clipboard.SetText(cfg.Mounts.ToJson());
+            VObject rootValue = JObject.FromObject(cfg.Mounts).ToVdf();
+            Logger.Warn(VdfConvert.Serialize(new VProperty("mountcfg", rootValue)));
         }
 
         private void createMapPoolToolStripMenuItem_Click(object sender, EventArgs e)
@@ -227,7 +232,7 @@ namespace GModMountManager
             {
                 var mount = (Mount)row.DataBoundItem;
                 var game = new Game(mount.Path);
-                Logger.Debug(game.ToJson());
+                Logger.Debug(game.ToJSON());
                 new UI.CreateMapPool(game).ShowDialog();
             }
         }

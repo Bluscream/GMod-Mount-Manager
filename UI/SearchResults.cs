@@ -50,14 +50,14 @@ namespace GModMountManager.UI
                 foreach (DriveInfo drive in Drives)
                 {
                     Logger.Info("Searching drive {} ({})", drive.VolumeLabel, drive.Name);
-                    Logger.Info(drive.RootDirectory.ToJson());
+                    Logger.Info(drive.RootDirectory.ToJSON());
                     await Task.Run(SearchDirectory(drive.RootDirectory));
                 }
             }
             Logger.Info("Finished searching");
             Text = $"Found {Results.Count} new games";
             lbl_status.Text = $"Finished searching, found {Results.Count} new games";
-            Logger.Debug(Results.ToJson(false));
+            Logger.Debug(Results.ToJSON(false));
             // lst_results.DataSource = source;
             lst_results.Columns["SourceMod"].ReadOnly = true;
         }

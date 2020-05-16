@@ -27,7 +27,7 @@ namespace GModMountManager
             var vp = VdfConvert.Deserialize(text, VdfSerializerSettings.Default);
             Mounts = new BindingList<Mount>(vp.Value.Children().Select(x => new Mount(x.Value.Value<string>(), x.Key)).ToList());
             Logger.Info("Read {} mounts successfully", Mounts.Count);
-            // Logger.Trace(Mounts.ToJson());
+            // Logger.Trace(Mounts.ToJSON());
         }
 
         public void save()
@@ -73,7 +73,7 @@ namespace GModMountManager
             Path = new DirectoryInfo(path);
             Name = name ?? Path.Name;
             //if (Path.FullName.StartsWith(MountsConfig.SourcemodsDir.FullName, System.StringComparison.OrdinalIgnoreCase)) SourceMod = true;
-            Logger.Trace("Created new mount: {}", this.ToJson(false));
+            Logger.Trace("Created new mount: {}", this.ToJSON(false));
         }
     }
 }
