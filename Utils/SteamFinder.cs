@@ -53,7 +53,7 @@ namespace GModMountManager
 
                 return steamFinder.FindGameFolder(appId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

@@ -10,7 +10,6 @@ using System.Net;
 using System.Globalization;
 using NLog;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Microsoft.WindowsAPICodePack.Shell;
 
 namespace GModMountManager
 {

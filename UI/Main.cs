@@ -1,8 +1,10 @@
 ﻿using GModMountManager.Classes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 
@@ -125,12 +127,6 @@ namespace GModMountManager
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
             Logger.Debug("contextMenuStrip1_Opening");
-            int itemCount = dataGridView1.SelectedRows.Count;
-            string voidPaymentText = "&Void Payment"; // to be localized
-            if (itemCount > 1)
-                voidPaymentText = "&Void Payments"; // to be localized
-                                                    // if (tsmiVoidPayment.Text != voidPaymentText) // avoid possible flicker
-                                                    // tsmiVoidPayment.Text = voidPaymentText;
         }
 
         private void tsmiVoidPayment_Click(object sender, EventArgs e)
@@ -162,6 +158,7 @@ namespace GModMountManager
 
         private void searchToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            new UI.Search().ShowDialog();
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
