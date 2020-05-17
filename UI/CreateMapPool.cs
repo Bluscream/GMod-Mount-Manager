@@ -23,11 +23,14 @@ namespace GModMountManager.UI
         private BindingSource source;
         private DirectoryInfo addonDir;
         private FileInfo addonFile;
+        private Random random = new Random();
+        private Color RandomColor;
 
         public CreateMapPool(Game game, DirectoryInfo gmodDir)
         {
             this.game = game; this.gmodDir = gmodDir;
             InitializeComponent();
+            RandomColor = Color.FromArgb(random.Next(200, 256), random.Next(200, 256), random.Next(200, 256));
             txt_longname.Text = game.LongName;
             Text = $"Create Map Pool for {game.Name}";
             btn_create.Enabled = addonDir.Exists;
@@ -94,7 +97,7 @@ namespace GModMountManager.UI
         private void btn_create_addon_Click(object sender, EventArgs e)
         {
             addonDir.Create();
-            addonDir.CombineFile("addon.json").WriteAllText(Properties.Resources.addon_json.Format(txt_name.Text)); // "{\"title\":\"" + txt_longname + "\",\"type\":\"gamemode\"}");
+            addonDir.CombineFile("addon.json").WriteAllText(Properties.Resources.addon_json.Format(txt_name.Text));
             var gameModeDir = addonDir.Combine("gamemodes", txt_shortname.Text, "gamemode");
             gameModeDir.Create();
             gameModeDir.Parent.CombineFile(txt_shortname.Text + ".txt").WriteAllText(Properties.Resources.gamemode_txt.Format(txt_shortname.Text, txt_name.Text, string.Join("|", game.Maps.Select(m => m.Name))));
@@ -108,14 +111,37 @@ namespace GModMountManager.UI
                 foreach (var map in game.Maps)
                 {
                     var stream = thumbDir.CombineFile($"{map.Name}.png").OpenWrite();
-                    CreateThumbnailOverlay(game.Name, map.Name, new Font("Segoe UI", 20), map.Order).Save(stream, ImageFormat.Png);
+                    CreateThumbnailOverlay(title: txt_name.Text, font: new Font("Segoe UI", 20), order: map.Order, _textColor: RandomColor).Save(stream, ImageFormat.Png);
                     stream.Close();
                 }
             }
             btn_create.Enabled = true;
+            var Dialogresult = MessageBox.Show($"Addon {txt_longname.Text} has been generated.\n\nDo you want to open it's folder now?", "Finished creating addon", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (Dialogresult == DialogResult.Yes) addonDir.ShowInExplorer();
+            var _maplist = game.GenerateMapList();
+            if (!game.MapList.SequenceEqual(_maplist))
+            {
+                Dialogresult = MessageBox.Show($"Maplist has been changed ({game.MapList.Count} > {_maplist.Count}).\n\nDo you want to overwrite it with the new order so it's loaded automatically next time?", "Maplist changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (Dialogresult == DialogResult.Yes) saveMapLists(_maplist);
+            }
         }
 
-        private static Image CreateThumbnailOverlay(string title, string mapname, Font font, int order = -1, Color? _textColor = null, Color? _backColor = null, int height = 256, int width = 256, Image baseImage = null)
+        private void saveMapLists(List<string> maps = null)
+        {
+            maps = maps ?? game.GenerateMapList();
+            game.MapListPath.Backup(true);
+            game.MapListPath.WriteAllText(maps.Join("\n"));
+
+            game.MapCyclePath.Backup(true);
+            game.MapCyclePath.WriteAllText(game.GenerateMapCycle().Join("\n"));
+        }
+
+        private void saveToolStripMenuItem_Click(object sender = null, EventArgs e = null)
+        {
+            saveMapLists();
+        }
+
+        private static Image CreateThumbnailOverlay(string title, Font font, string mapname = null, int order = -1, Color? _textColor = null, Color? _backColor = null, int height = 256, int width = 256, Image baseImage = null)
         {
             var textColor = _textColor ?? Color.Orange;
             var backColor = _backColor ?? Color.Transparent;
@@ -125,9 +151,8 @@ namespace GModMountManager.UI
             Brush textBrush = new SolidBrush(textColor);
             drawing.DrawString(title, font, textBrush, 10, 10);
             font = new Font(font.FontFamily, 15, font.Style);
-            drawing.DrawString(mapname, font, textBrush, 10, height - 40);
-            font = new Font(font.FontFamily, 30, font.Style);
-            if (order > -1) drawing.DrawString(order.ToString(), font, textBrush, height - 50, height - 50);
+            if (!mapname.IsNullOrWhiteSpace()) drawing.DrawString(mapname, font, textBrush, 10, height - 40);
+            if (order > 0) drawing.DrawString(order.ToString(), new Font(font.FontFamily, 30, font.Style), textBrush, height - 50, height - 50);
             drawing.Save();
             textBrush.Dispose();
             drawing.Dispose();

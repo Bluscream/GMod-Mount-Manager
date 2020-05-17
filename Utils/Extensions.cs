@@ -114,6 +114,16 @@ namespace GModMountManager
             return new DirectoryInfo(final);
         }
 
+        public static FileInfo CombineFile(this DirectoryInfo dir, params string[] paths)
+        {
+            var final = dir.FullName;
+            foreach (var path in paths)
+            {
+                final = Path.Combine(final, path);
+            }
+            return new FileInfo(final);
+        }
+
         public static void ShowInExplorer(this DirectoryInfo dir)
         {
             Utils.StartProcess("explorer.exe", null, dir.FullName.Quote());
@@ -123,14 +133,9 @@ namespace GModMountManager
 
         #region FileInfo
 
-        public static FileInfo CombineFile(this DirectoryInfo dir, params string[] paths)
+        public static FileInfo Backup(this FileInfo file, bool overwrite = true, string extension = ".bak")
         {
-            var final = dir.FullName;
-            foreach (var path in paths)
-            {
-                final = Path.Combine(final, path);
-            }
-            return new FileInfo(final);
+            return file.CopyTo(file.FullName + extension, overwrite);
         }
 
         public static FileInfo Combine(this FileInfo file, params string[] paths)
@@ -339,6 +344,9 @@ namespace GModMountManager
 
         #region List
 
+        public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)
+   => self.Select((item, index) => (item, index));
+
         public static string ToQueryString(this NameValueCollection nvc)
         {
             if (nvc == null) return string.Empty;
@@ -376,6 +384,11 @@ namespace GModMountManager
         {
             if (!collection.AllKeys.Contains(key)) return collection[key];
             return null;
+        }
+
+        public static string Join(this List<string> strings, string separator)
+        {
+            return string.Join(separator, strings);
         }
 
         public static T PopFirst<T>(this IEnumerable<T> list) => list.ToList().PopAt(0);

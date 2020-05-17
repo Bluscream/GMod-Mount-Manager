@@ -23,26 +23,45 @@ namespace GModMountManager.Classes
         public string TypeStr { get { return Type == GameType.SINGLEPLAYER_ONLY ? "Campaign" : "Map Pool"; } }
         public bool SupportsVR { get; set; }
         public List<Map> Maps { get; set; } = new List<Map>();
+        public FileInfo MapListPath { get; set; }
+        public List<string> MapList { get; set; } = new List<string>();
+        public FileInfo MapCyclePath { get; set; }
+        public List<string> MapCycle { get; set; } = new List<string>();
 
         public Game(DirectoryInfo gameDir)
         {
             MountPath = gameDir;
-            var maplistfile = gameDir.CombineFile("maplist.txt");
-            var maplist = new List<string>();
-            if (maplistfile.Exists)
+            MapListPath = gameDir.CombineFile("maplist.txt");
+            if (MapListPath.Exists)
             {
-                maplist = maplistfile.ReadAllLines().Where(arg => !string.IsNullOrWhiteSpace(arg)).ToList();
-                maplist.ForEach(a => a.ToLower());
+                MapList = MapListPath.ReadAllLines().Select(a => a.ToLower()).Where(arg => !string.IsNullOrWhiteSpace(arg)).ToList();
             }
-            foreach (var map in gameDir.Combine("maps").GetFiles("*.bsp"))
+            MapCyclePath = gameDir.CombineFile("mapcycle.txt");
+            if (MapCyclePath.Exists)
+            {
+                MapCycle = MapCyclePath.ReadAllLines().Select(a => a.ToLower()).Where(arg => !string.IsNullOrWhiteSpace(arg)).ToList();
+            }
+            foreach (var map in gameDir.Combine("maps").GetFiles("*.*").Where(s => s.Extension == ".bsp" || s.Extension == ".vmf"))
             {
                 var _map = new Map(map);
-                _map.Order = maplist.FindIndex(a => a == _map.Name);
+                if (!_map.isBackground) _map.Order = MapList.FindIndex(a => a == _map.Name) + 1;
+                else _map.Hidden = true;
                 Maps.Add(_map);
+            }
+            // var _mapnames = Maps.Select(m => m.Name);
+            foreach (var (map, i) in MapList.WithIndex())
+            {
+                var _map = Maps.Where(m => m.Name == map).FirstOrDefault();
+                if (_map != null) Maps.Add(new Map(map) { Order = i });
+            }
+            foreach (var map in MapCycle)
+            {
+                var _map = Maps.Where(m => m.Name == map).FirstOrDefault();
+                if (_map != null) Maps.Add(new Map(map));
             }
             Maps.Sort((x, y) => x.Name.CompareTo(y.Name));
             // Maps.Reverse();
-            if (maplist.Count > 0) Maps.Sort((x, y) => x.Order.CompareTo(y.Order));
+            if (MapList.Count > 0) Maps.Sort((x, y) => x.Order.CompareTo(y.Order));
             GameInfoPath = gameDir.CombineFile("gameinfo.txt");
             if (!GameInfoPath.Exists) throw new System.Exception("Could not find gameinfo.txt");
             try
@@ -70,6 +89,7 @@ namespace GModMountManager.Classes
                     foreach (var map in Maps)
                     {
                         map.Hidden = gi.Hidden_maps.ContainsKey(map.Name);
+                        if (map.Hidden) map.Order = -1;
                     }
                 }
             }
@@ -78,6 +98,16 @@ namespace GModMountManager.Classes
                 Logger.Error(ex.ToString());
                 Name = gameDir.Name;
             }
+        }
+
+        public List<string> GenerateMapList()
+        {
+            return Maps.Where(m => m.Order > 0 && !m.Hidden).ToList().OrderBy(m => m.Order).Select(m => m.Name).ToList();
+        }
+
+        public List<string> GenerateMapCycle()
+        {
+            return Maps.Where(m => m.Order < 1 && !m.Hidden).ToList().OrderBy(m => m.Order).Select(m => m.Name).ToList();
         }
     }
 
@@ -95,6 +125,8 @@ namespace GModMountManager.Classes
 
         public bool Hidden { get; set; }
 
+        public bool isBackground {get; }
+
         public string Name { get; set; }
 
         [Browsable(false)]
@@ -103,7 +135,13 @@ namespace GModMountManager.Classes
         public Map(FileInfo file)
         {
             Name = file.FileNameWithoutExtension().ToLower();
+            isBackground = Name.Contains("background") || Name.StartsWith("bg");
             File = file;
+        }
+
+        public Map(string name)
+        {
+            Name = name;
         }
     }
 }
