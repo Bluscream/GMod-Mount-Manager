@@ -117,7 +117,7 @@ namespace GModMountManager.UI
 
         private static Image CreateThumbnailOverlay(string title, string mapname, Font font, int order = -1, Color? _textColor = null, Color? _backColor = null, int height = 256, int width = 256, Image baseImage = null)
         {
-            var textColor = _textColor ?? Color.Orange;
+            var textColor = _textColor ?? Color.White;
             var backColor = _backColor ?? Color.Transparent;
             Image img = baseImage ?? new Bitmap(width, height);
             Graphics drawing = Graphics.FromImage(img);

@@ -17,7 +17,6 @@ using System.Collections.ObjectModel;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace GModMountManager
 {
@@ -109,7 +108,7 @@ namespace GModMountManager
             var final = dir.FullName;
             foreach (var path in paths)
             {
-                final = Path.Combine(final, path.ReplaceInvalidFileNameChars());
+                final = Path.Combine(final, path);
             }
             return new DirectoryInfo(final);
         }
@@ -310,22 +309,12 @@ namespace GModMountManager
         {
             return string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
         }
-
         public static string ReplaceInvalidFileNameChars(this string filename)
         {
-            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));    
         }
 
         #endregion String
-
-        #region Int
-
-        public static int Percentage(this int total, int part)
-        {
-            return (int)((double)part / total * 100);
-        }
-
-        #endregion Int
 
         #region Dict
 

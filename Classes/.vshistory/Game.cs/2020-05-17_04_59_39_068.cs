@@ -90,7 +90,7 @@ namespace GModMountManager.Classes
 
     public class Map
     {
-        // [Browsable(false)]
+        [Browsable(false)]
         public int Order { get; set; } = -1;
 
         public bool Hidden { get; set; }

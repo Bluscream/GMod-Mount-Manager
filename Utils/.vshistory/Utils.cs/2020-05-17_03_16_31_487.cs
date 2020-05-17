@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.Net;
 using System.Globalization;
 using NLog;
-using System.Drawing;
 
 namespace GModMountManager
 {

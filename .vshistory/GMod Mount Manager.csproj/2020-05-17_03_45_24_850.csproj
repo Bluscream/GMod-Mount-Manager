@@ -142,7 +142,6 @@
     <Compile Include="Utils\Config.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\ExternalConsole.cs" />
-    <Compile Include="Utils\GoogleImageDownloader.cs" />
     <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\SteamFinder.cs" />
     <Compile Include="Utils\Utils.cs" />

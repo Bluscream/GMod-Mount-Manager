@@ -37,10 +37,10 @@ namespace GModMountManager.Classes
         public string Developer { get; set; }
 
         [JsonProperty("developer_url", NullValueHandling = NullValueHandling.Ignore)]
-        public string DeveloperUrl { get; set; }
+        public Uri DeveloperUrl { get; set; }
 
         [JsonProperty("homepage", NullValueHandling = NullValueHandling.Ignore)]
-        public string Homepage { get; set; }
+        public Uri Homepage { get; set; }
 
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }

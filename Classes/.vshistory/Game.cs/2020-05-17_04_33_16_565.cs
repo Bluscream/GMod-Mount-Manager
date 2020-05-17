@@ -59,9 +59,9 @@ namespace GModMountManager.Classes
                 if (Name.IsNullOrWhiteSpace()) Name = gi.Title ?? Name;
                 if (Name.IsNullOrWhiteSpace()) Name = gi.Title2 ?? Name;
                 Icon = gi.Icon ?? Icon;
-                Developer = gi.Developer ?? null;
-                Homepage = gi.Homepage ?? null;
-                if (Homepage.IsNullOrWhiteSpace()) Homepage = gi.DeveloperUrl ?? null;
+                Developer = gi.Developer ?? Developer;
+                Homepage = gi.Homepage?.AbsoluteUri;
+                if (Homepage.IsNullOrWhiteSpace()) Homepage = gi.DeveloperUrl?.AbsoluteUri;
                 if (gi.Type == "singleplayer_only") Type = GameType.SINGLEPLAYER_ONLY;
                 else if (gi.Type == "multiplayer_only") Type = GameType.MULTIPLAYER_ONLY;
                 if (gi.SupportsVR != null) SupportsVR = gi.SupportsVR == 1;
@@ -90,7 +90,7 @@ namespace GModMountManager.Classes
 
     public class Map
     {
-        // [Browsable(false)]
+        [Browsable(false)]
         public int Order { get; set; } = -1;
 
         public bool Hidden { get; set; }

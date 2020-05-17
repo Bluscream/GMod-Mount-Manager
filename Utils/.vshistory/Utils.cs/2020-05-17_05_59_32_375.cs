@@ -217,5 +217,21 @@ namespace GModMountManager
             }
             return new IPEndPoint(ip, port);
         }
+
+        internal static Image CreateThumbnailOverlay(string title, Font font, int order = -1, Color? _textColor = null, Color? _backColor = null, int height = 256, int width = 256, Image baseImage = null)
+        {
+            var textColor = _textColor ?? Color.Black;
+            var backColor = _backColor ?? Color.Transparent;
+            Image img = baseImage ?? new Bitmap(width, height);
+            Graphics drawing = Graphics.FromImage(img);
+            drawing.Clear(backColor);
+            Brush textBrush = new SolidBrush(textColor);
+            drawing.DrawString(title, font, textBrush, 10, 10);
+            if (order > -1) drawing.DrawString(order.ToString(), font, textBrush, width.Percentage(80), height.Percentage(80));
+            drawing.Save();
+            textBrush.Dispose();
+            drawing.Dispose();
+            return img;
+        }
     }
 }

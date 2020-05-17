@@ -108,30 +108,11 @@ namespace GModMountManager.UI
                 foreach (var map in game.Maps)
                 {
                     var stream = thumbDir.CombineFile($"{map.Name}.png").OpenWrite();
-                    CreateThumbnailOverlay(game.Name, map.Name, new Font("Segoe UI", 20), map.Order).Save(stream, ImageFormat.Png);
+                    Utils.DrawText(game.Name, DefaultFont, Color.White, Color.Black, 256, 256).Save(stream, ImageFormat.Png);
                     stream.Close();
                 }
             }
             btn_create.Enabled = true;
-        }
-
-        private static Image CreateThumbnailOverlay(string title, string mapname, Font font, int order = -1, Color? _textColor = null, Color? _backColor = null, int height = 256, int width = 256, Image baseImage = null)
-        {
-            var textColor = _textColor ?? Color.Orange;
-            var backColor = _backColor ?? Color.Transparent;
-            Image img = baseImage ?? new Bitmap(width, height);
-            Graphics drawing = Graphics.FromImage(img);
-            drawing.Clear(backColor);
-            Brush textBrush = new SolidBrush(textColor);
-            drawing.DrawString(title, font, textBrush, 10, 10);
-            font = new Font(font.FontFamily, 15, font.Style);
-            drawing.DrawString(mapname, font, textBrush, 10, height - 40);
-            font = new Font(font.FontFamily, 30, font.Style);
-            if (order > -1) drawing.DrawString(order.ToString(), font, textBrush, height - 50, height - 50);
-            drawing.Save();
-            textBrush.Dispose();
-            drawing.Dispose();
-            return img;
         }
     }
 }

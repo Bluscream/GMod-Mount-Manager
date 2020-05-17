@@ -17,7 +17,6 @@ using System.Collections.ObjectModel;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace GModMountManager
 {
@@ -317,15 +316,6 @@ namespace GModMountManager
         }
 
         #endregion String
-
-        #region Int
-
-        public static int Percentage(this int total, int part)
-        {
-            return (int)((double)part / total * 100);
-        }
-
-        #endregion Int
 
         #region Dict
 
