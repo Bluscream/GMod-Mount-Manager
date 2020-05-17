@@ -15,10 +15,12 @@ namespace GModMountManager.Classes
         public DirectoryInfo MountPath { get; set; }
         public FileInfo GameInfoPath { get; set; }
         public string Name { get; set; }
+        public string LongName { get { return $"{Name} {TypeStr}"; } }
         public string Icon { get; set; }
         public string Developer { get; set; }
         public string Homepage { get; set; }
         public GameType Type { get; set; } = GameType.UNKNOWN;
+        public string TypeStr { get { return Type == GameType.SINGLEPLAYER_ONLY ? "Campaign" : "Map Pool"; } }
         public bool SupportsVR { get; set; }
         public List<Map> Maps { get; set; } = new List<Map>();
 
@@ -90,6 +92,7 @@ namespace GModMountManager.Classes
     {
         [Browsable(false)]
         public int Order { get; set; } = -1;
+
         public bool Hidden { get; set; }
 
         public string Name { get; set; }

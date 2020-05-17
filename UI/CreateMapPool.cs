@@ -27,7 +27,7 @@ namespace GModMountManager.UI
         {
             this.game = game; this.gmodDir = gmodDir;
             InitializeComponent();
-            txt_longname.Text = game.Type == GameType.SINGLEPLAYER_ONLY ? "Campaign" : "Map Pool";
+            txt_longname.Text = game.LongName;
             Text = $"Create Map Pool for {game.Name}";
             btn_create.Enabled = addonDir.Exists;
             btn_upload.Enabled = addonFile.Exists;
@@ -39,7 +39,6 @@ namespace GModMountManager.UI
             txt_name.Text = game.Name;
             txt_dev.Text = game.Developer;
             txt_url.Text = game.Homepage;
-            txt_description.Text = Properties.Resources.steam_description.Format(txt_url.Text, txt_name.Text, txt_url.Text);
 
             source = new BindingSource() { DataSource = game.Maps };
 
@@ -55,8 +54,10 @@ namespace GModMountManager.UI
             var txt = sender as TextBox;
             if (txt == txt_longname)
             {
-                addonDir =
+                addonDir = gmodDir.Combine("garrysmod", "addons", txt_longname.Text);
+                addonFile = gmodDir.CombineFile("garrysmod", "addons", txt_longname.Text + ".gma");
             }
+            txt_description.Text = Properties.Resources.steam_description.Format(txt_url.Text, txt_name.Text, txt_shortname.Text, game.TypeStr);
         }
 
         private void txt_longname_TextChanged(object sender = null, EventArgs e = null)
