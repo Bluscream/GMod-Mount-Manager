@@ -16,6 +16,7 @@ namespace GModMountManager
 {
     internal partial class Main : Form
     {
+        private DirectoryInfo gmodDir;
         private MountsConfig cfg;
         private BindingSource source;
 
@@ -35,9 +36,15 @@ namespace GModMountManager
             FileInfo cfgFile;
             try
             {
-                cfgFile = new DirectoryInfo(SteamFinder.GetSteamLocation(4000)).CombineFile(MountsConfig.RelativePath);
+                gmodDir = new DirectoryInfo(SteamFinder.GetSteamLocation(4000));
+                cfgFile = gmodDir.CombineFile(MountsConfig.RelativePath);
             }
-            catch (Exception ex) { Logger.Warn("Could not find GMod directory! ({})", ex.Message); cfgFile = Utils.pickFile("Select mount.cfg", filter: "Mount CFG|mount.cfg"); }
+            catch (Exception ex)
+            {
+                Logger.Warn("Could not find GMod directory! ({})", ex.Message);
+                cfgFile = Utils.pickFile("Select mount.cfg", filter: "Mount CFG|mount.cfg");
+                gmodDir = cfgFile.Directory.Parent.Parent;
+            }
             InitializeComponent();
             LoadMountsCFG(cfgFile);
         }
@@ -233,7 +240,7 @@ namespace GModMountManager
                 var mount = (Mount)row.DataBoundItem;
                 var game = new Game(mount.Path);
                 Logger.Debug(game.ToJSON());
-                new UI.CreateMapPool(game).ShowDialog();
+                new UI.CreateMapPool(game, gmodDir).ShowDialog();
             }
         }
     }

@@ -22,7 +22,7 @@ namespace GModMountManager.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace GModMountManager.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GModMountManager.Properties.Resources", typeof(Resources).Assembly);
@@ -51,12 +51,100 @@ namespace GModMountManager.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {{
+        ///	&quot;title&quot;: &quot;{0}&quot;,
+        ///	&quot;type&quot;: &quot;gamemode&quot;
+        ///}}.
+        /// </summary>
+        public static string addon_json {
+            get {
+                return ResourceManager.GetString("addon_json", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to include( &quot;shared.lua&quot; ).
+        /// </summary>
+        public static string cl_init_lua {
+            get {
+                return ResourceManager.GetString("cl_init_lua", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot;
+        ///{{
+        ///	&quot;base&quot;		&quot;base&quot;
+        ///	&quot;title&quot;		&quot;{1}&quot;
+        ///	&quot;maps&quot;		&quot;{2}&quot;
+        ///	&quot;menusystem&quot;	&quot;0&quot;
+        ///}}.
+        /// </summary>
+        public static string gamemode_txt {
+            get {
+                return ResourceManager.GetString("gamemode_txt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AddCSLuaFile( &quot;cl_init.lua&quot; )
+        ///AddCSLuaFile( &quot;shared.lua&quot; )
+        ///
+        ///include( &quot;shared.lua&quot; ).
+        /// </summary>
+        public static string init_lua {
+            get {
+                return ResourceManager.GetString("init_lua", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GM.Name = &quot;{0}&quot;
+        ///GM.Author = &quot;{1}&quot;
+        ///GM.Email = &quot;&quot;
+        ///GM.Website = &quot;{2}&quot;
+        ///
+        ///function GM:Initialize()
+        ///	-- Do stuff
+        ///end.
+        /// </summary>
+        public static string shared_lua {
+            get {
+                return ResourceManager.GetString("shared_lua", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {3} for the levels from [url={0}]{1}[/url]
+        ///[hr]
+        ///[h1]Requires the following Items:[/h1]
+        ///[list]
+        ///    [*][url={0}]{1}[/url]
+        ///[/list]
+        ///[hr]
+        ///Make sure to mount it with the &lt;garrysmod/mount.cfg&gt;!
+        ///
+        ///Example:
+        ///[code]&quot;{2}&quot;  &quot;C:\Program Files (x86)\Steam\steamapps\{1}\{2}&quot;[/code]
+        ///If you need help mounting check out [url=https://wiki.facepunch.com/gmod/Mounting_Content_on_a_Dedicated_Server]this[/url] or [url=https://steamcommunity.com/sharedfiles/filedetails/?id=479856125]this[/url] tutorial.
+        ///
+        ///[hr]
+        ///
+        ///This ma [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string steam_description {
+            get {
+                return ResourceManager.GetString("steam_description", resourceCulture);
             }
         }
     }

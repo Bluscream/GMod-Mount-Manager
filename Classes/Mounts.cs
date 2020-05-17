@@ -30,7 +30,7 @@ namespace GModMountManager
             // Logger.Trace(Mounts.ToJSON());
         }
 
-        public void save()
+        public void Save()
         {
             var bakfile = File.Combine(".bak");
             var str = ""; // VdfConvert.Serialize(VToken()); // TODO: https://github.com/shravan2x/Gameloop.Vdf/issues/19

@@ -10,34 +10,57 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Controls.Primitives;
+using NLog.Fluent;
 
 namespace GModMountManager.UI
 {
     public partial class CreateMapPool : Form
     {
-        private Game game { get; set; }
+        private DirectoryInfo gmodDir;
+        private Game game;
         private BindingSource source;
+        private DirectoryInfo addonDir;
+        private FileInfo addonFile;
 
-        public CreateMapPool(Game game)
+        public CreateMapPool(Game game, DirectoryInfo gmodDir)
         {
-            this.game = game;
+            this.game = game; this.gmodDir = gmodDir;
             InitializeComponent();
+            txt_longname.Text = game.Type == GameType.SINGLEPLAYER_ONLY ? "Campaign" : "Map Pool";
             Text = $"Create Map Pool for {game.Name}";
+            btn_create.Enabled = addonDir.Exists;
+            btn_upload.Enabled = addonFile.Exists;
         }
 
         private void CreateMapPool_Load(object sender, EventArgs e)
         {
+            txt_shortname.Text = game.MountPath.Name;
             txt_name.Text = game.Name;
             txt_dev.Text = game.Developer;
             txt_url.Text = game.Homepage;
+            txt_description.Text = Properties.Resources.steam_description.Format(txt_url.Text, txt_name.Text, txt_url.Text);
 
             source = new BindingSource() { DataSource = game.Maps };
 
             lst_maps.AutoGenerateColumns = true;
             lst_maps.DataSource = source;
-            lst_maps.Columns["Order"].ReadOnly = true;
+            // lst_maps.Columns["Order"].ReadOnly = true;
             lst_maps.AutoResizeColumns();
             lst_maps.StretchLastColumn();
+        }
+
+        private void txt_TextChanged(object sender, EventArgs e)
+        {
+            var txt = sender as TextBox;
+            if (txt == txt_longname)
+            {
+                addonDir =
+            }
+        }
+
+        private void txt_longname_TextChanged(object sender = null, EventArgs e = null)
+        {
         }
 
         private void btn_upload_Click(object sender, EventArgs e)
@@ -46,8 +69,8 @@ namespace GModMountManager.UI
 
         private void btn_create_Click(object sender, EventArgs e)
         {
-            var fileName = $"{game.Name}.gma";
-            var file = Utils.saveFile($"Save {fileName}", Path.GetTempPath());
+            var file = Utils.saveFile($"Save {addonFile.Name}", addonFile.DirectoryName, fileName: addonFile.Name);
+            file.Create(); // Todo: Change
             if (file is null || !file.Exists) return;
             Logger.Log("Saved {}", file.FullName);
             btn_upload.Enabled = true;
@@ -64,6 +87,28 @@ namespace GModMountManager.UI
                 // Logger.Debug(cell.OwningRow.DataBoundItem.ToJSON());
             }
             e.ContextMenuStrip = contextMenuStrip1;
+        }
+
+        private void btn_create_addon_Click(object sender, EventArgs e)
+        {
+            addonDir.Create();
+            addonDir.CombineFile("addon.json").WriteAllText(Properties.Resources.addon_json.Format(txt_name.Text)); // "{\"title\":\"" + txt_longname + "\",\"type\":\"gamemode\"}");
+            var gameModeDir = addonDir.Combine("gamemodes", txt_shortname.Text, "gamemode");
+            gameModeDir.Create();
+            gameModeDir.Parent.CombineFile(txt_shortname.Text + ".txt").WriteAllText(Properties.Resources.gamemode_txt.Format(txt_shortname.Text, txt_name.Text, string.Join("|", game.Maps.Select(m => m.Name))));
+            gameModeDir.CombineFile("cl_init.lua").WriteAllText(Properties.Resources.cl_init_lua);
+            gameModeDir.CombineFile("init.lua").WriteAllText(Properties.Resources.init_lua);
+            gameModeDir.CombineFile("shared.lua").WriteAllText(Properties.Resources.shared_lua.Format(txt_name.Text, txt_dev.Text, txt_url.Text));
+            if (lst_maps.Rows.Count > 0)
+            {
+                var thumbDir = addonDir.Combine("maps", "thumb");
+                thumbDir.Create();
+                foreach (var map in game.Maps)
+                {
+                    thumbDir.CombineFile($"{map.Name}.png").Create();
+                }
+            }
+            btn_create.Enabled = true;
         }
     }
 }

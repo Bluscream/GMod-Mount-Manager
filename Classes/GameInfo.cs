@@ -1,11 +1,18 @@
-﻿using Newtonsoft.Json;
-using System;
-using Newtonsoft.Json.Converters;
+﻿using System;
 using System.Globalization;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace GModMountManager.Classes
 {
-    public partial class GameInfo2
+    public partial class GameInfoWrapper
+    {
+        [JsonProperty("GameInfo", NullValueHandling = NullValueHandling.Ignore)]
+        public GameInfo GameInfo { get; set; }
+    }
+
+    public partial class GameInfo
     {
         [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
@@ -23,8 +30,8 @@ namespace GModMountManager.Classes
         public string Icon { get; set; }
 
         [JsonProperty("gamelogo", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long? Gamelogo { get; set; }
+        // [JsonConverter(typeof(ParseStringConverter))]
+        public int? Gamelogo { get; set; }
 
         [JsonProperty("developer", NullValueHandling = NullValueHandling.Ignore)]
         public string Developer { get; set; }
@@ -39,24 +46,24 @@ namespace GModMountManager.Classes
         public string Type { get; set; }
 
         [JsonProperty("SupportsDX8", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long? SupportsDx8 { get; set; }
+        // [JsonConverter(typeof(ParseStringConverter))]
+        public int? SupportsDx8 { get; set; }
 
         [JsonProperty("SupportsXbox360", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long? SupportsXbox360 { get; set; }
+        // [JsonConverter(typeof(ParseStringConverter))]
+        public int? SupportsXbox360 { get; set; }
 
         [JsonProperty("nomodels", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long? Nomodels { get; set; }
+        // [JsonConverter(typeof(ParseStringConverter))]
+        public int? Nomodels { get; set; }
 
         [JsonProperty("supportsvr", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long? SupportsVR { get; set; }
+        // [JsonConverter(typeof(ParseStringConverter))]
+        public int? SupportsVR { get; set; }
 
         [JsonProperty("nocrosshair", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long? Nocrosshair { get; set; }
+        // [JsonConverter(typeof(ParseStringConverter))]
+        public int? Nocrosshair { get; set; }
 
         [JsonProperty("GameData", NullValueHandling = NullValueHandling.Ignore)]
         public string GameData { get; set; }
@@ -66,16 +73,18 @@ namespace GModMountManager.Classes
 
         [JsonProperty("FileSystem", NullValueHandling = NullValueHandling.Ignore)]
         public FileSystem FileSystem { get; set; }
+
+        public Dictionary<string, int> Hidden_maps { get; set; }
     }
 
     public partial class FileSystem
     {
         [JsonProperty("SteamAppId", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
+        // [JsonConverter(typeof(ParseStringConverter))]
         public long? SteamAppId { get; set; }
 
         [JsonProperty("ToolsAppId", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
+        // [JsonConverter(typeof(ParseStringConverter))]
         public long? ToolsAppId { get; set; }
 
         [JsonProperty("SearchPaths", NullValueHandling = NullValueHandling.Ignore)]

@@ -138,13 +138,14 @@ namespace GModMountManager
             }
         }
 
-        public static FileInfo saveFile(string title = null, string initialDirectory = null, string filter = null, string content = null)
+        public static FileInfo saveFile(string title = null, string initialDirectory = null, string filter = null, string fileName = null, string content = null)
         {
             using (var fileDialog = new SaveFileDialog())
             {
                 if (title != null) fileDialog.Title = title;
                 fileDialog.InitialDirectory = initialDirectory ?? "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
                 if (filter != null) fileDialog.Filter = filter;
+                fileDialog.FileName = fileName ?? null;
                 var result = fileDialog.ShowDialog();
                 if (result != DialogResult.OK || fileDialog.FileName.IsNullOrWhiteSpace()) return null;
                 if (content != null)

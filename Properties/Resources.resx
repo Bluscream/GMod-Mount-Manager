@@ -46,7 +46,7 @@
     
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
@@ -60,6 +60,7 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -68,9 +69,10 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
@@ -85,9 +87,10 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -109,9 +112,64 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="addon_json" xml:space="preserve">
+    <value>{{
+	"title": "{0}",
+	"type": "gamemode"
+}}</value>
+  </data>
+  <data name="cl_init_lua" xml:space="preserve">
+    <value>include( "shared.lua" )</value>
+  </data>
+  <data name="gamemode_txt" xml:space="preserve">
+    <value>"{0}"
+{{
+	"base"		"base"
+	"title"		"{1}"
+	"maps"		"{2}"
+	"menusystem"	"0"
+}}</value>
+  </data>
+  <data name="init_lua" xml:space="preserve">
+    <value>AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "shared.lua" )
+
+include( "shared.lua" )</value>
+  </data>
+  <data name="shared_lua" xml:space="preserve">
+    <value>GM.Name = "{0}"
+GM.Author = "{1}"
+GM.Email = ""
+GM.Website = "{2}"
+
+function GM:Initialize()
+	-- Do stuff
+end</value>
+  </data>
+  <data name="steam_description" xml:space="preserve">
+    <value>{3} for the levels from [url={0}]{1}[/url]
+[hr]
+[h1]Requires the following Items:[/h1]
+[list]
+    [*][url={0}]{1}[/url]
+[/list]
+[hr]
+Make sure to mount it with the &lt;garrysmod/mount.cfg&gt;!
+
+Example:
+[code]"{2}"  "C:\Program Files (x86)\Steam\steamapps\{1}\{2}"[/code]
+If you need help mounting check out [url=https://wiki.facepunch.com/gmod/Mounting_Content_on_a_Dedicated_Server]this[/url] or [url=https://steamcommunity.com/sharedfiles/filedetails/?id=479856125]this[/url] tutorial.
+
+[hr]
+
+This map pool was created with the help of [url=https://github.com/Bluscream/GMod-Mount-Manager]GMod Mounts Manager[/url].
+
+[hr]
+Tags: [spoiler]campaign, game mode, gamemode, maps, map, pool, group, vr, vrmod, half-life, half life, single player, singleplayer, icon, icons, thumbnail, thumbnails, preview, previews, maplist, mapcycle, sourcemod, mod[/spoiler]</value>
+  </data>
 </root>
