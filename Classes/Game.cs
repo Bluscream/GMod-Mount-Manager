@@ -28,14 +28,19 @@ namespace GModMountManager.Classes
         public FileInfo MapCyclePath { get; set; }
         public List<string> MapCycle { get; set; } = new List<string>();
 
-        public Game(DirectoryInfo gameDir)
+        internal void LoadMapList(FileInfo path = null)
         {
-            MountPath = gameDir;
-            MapListPath = gameDir.CombineFile("maplist.txt");
+            MapListPath = path ?? MountPath.CombineFile("maplist.txt");
             if (MapListPath.Exists)
             {
                 MapList = MapListPath.ReadAllLines().Select(a => a.ToLower()).Where(arg => !string.IsNullOrWhiteSpace(arg)).ToList();
             }
+        }
+
+        public Game(DirectoryInfo gameDir)
+        {
+            MountPath = gameDir;
+            LoadMapList();
             MapCyclePath = gameDir.CombineFile("mapcycle.txt");
             if (MapCyclePath.Exists)
             {
@@ -44,24 +49,23 @@ namespace GModMountManager.Classes
             foreach (var map in gameDir.Combine("maps").GetFiles("*.*").Where(s => s.Extension == ".bsp" || s.Extension == ".vmf"))
             {
                 var _map = new Map(map);
-                if (!_map.isBackground) _map.Order = MapList.FindIndex(a => a == _map.Name) + 1;
-                else _map.Hidden = true;
+                // if (!_map.Background) _map.Order = MapList.FindIndex(a => a == _map.Name) + 1;
+                // else _map.Hidden = true;
                 Maps.Add(_map);
             }
-            // var _mapnames = Maps.Select(m => m.Name);
-            foreach (var (map, i) in MapList.WithIndex())
+            foreach (var map in MapList.Where(m => !Map.isBackground(m)).ToList())
             {
                 var _map = Maps.Where(m => m.Name == map).FirstOrDefault();
-                if (_map != null) Maps.Add(new Map(map) { Order = i });
+                if (_map is null)
+                {
+                    Maps.Add(new Map(map));
+                }
             }
             foreach (var map in MapCycle)
             {
                 var _map = Maps.Where(m => m.Name == map).FirstOrDefault();
-                if (_map != null) Maps.Add(new Map(map));
+                if (_map is null) Maps.Add(new Map(map));
             }
-            Maps.Sort((x, y) => x.Name.CompareTo(y.Name));
-            // Maps.Reverse();
-            if (MapList.Count > 0) Maps.Sort((x, y) => x.Order.CompareTo(y.Order));
             GameInfoPath = gameDir.CombineFile("gameinfo.txt");
             if (!GameInfoPath.Exists) throw new System.Exception("Could not find gameinfo.txt");
             try
@@ -89,7 +93,7 @@ namespace GModMountManager.Classes
                     foreach (var map in Maps)
                     {
                         map.Hidden = gi.Hidden_maps.ContainsKey(map.Name);
-                        if (map.Hidden) map.Order = -1;
+                        // if (map.Hidden) map.Order = -1;
                     }
                 }
             }
@@ -98,6 +102,14 @@ namespace GModMountManager.Classes
                 Logger.Error(ex.ToString());
                 Name = gameDir.Name;
             }
+            var maplist_nobg = MapList.Where(m => !Map.isBackground(m)).ToList();
+            foreach (var map in Maps)
+            {
+                if (!map.Hidden && maplist_nobg.Contains(map.Name)) map.Order = maplist_nobg.IndexOf(map.Name) + 1;
+            }
+            Maps.Sort((x, y) => x.Name.CompareTo(y.Name));
+            // Maps.Reverse();
+            if (MapList.Count > 0) Maps.Sort((x, y) => x.Order.CompareTo(y.Order));
         }
 
         public List<string> GenerateMapList()
@@ -125,7 +137,7 @@ namespace GModMountManager.Classes
 
         public bool Hidden { get; set; }
 
-        public bool isBackground {get; }
+        // public bool Background { get; }
 
         public string Name { get; set; }
 
@@ -135,13 +147,19 @@ namespace GModMountManager.Classes
         public Map(FileInfo file)
         {
             Name = file.FileNameWithoutExtension().ToLower();
-            isBackground = Name.Contains("background") || Name.StartsWith("bg");
+            Hidden = isBackground(Name);
             File = file;
         }
 
         public Map(string name)
         {
             Name = name;
+            Hidden = isBackground(Name);
+        }
+
+        public static bool isBackground(string name)
+        {
+            return name.Contains("background") || name.StartsWith("bg");
         }
     }
 }
