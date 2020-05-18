@@ -1,6 +1,5 @@
-﻿using System.Diagnostics;
+﻿using NLog;
 using System.Globalization;
-using NLog;
 
 namespace GModMountManager
 {

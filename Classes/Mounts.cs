@@ -1,11 +1,8 @@
 ﻿using Gameloop.Vdf;
 using Gameloop.Vdf.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace GModMountManager
 {

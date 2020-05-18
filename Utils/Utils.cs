@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Security.Principal;
-using System.Diagnostics;
-using System.Reflection;
-using System.Windows.Forms;
 using System.Net;
-using System.Globalization;
-using NLog;
-using System.Drawing;
+using System.Reflection;
+using System.Security.Principal;
+using System.Text;
+using System.Windows.Forms;
 
 namespace GModMountManager
 {
