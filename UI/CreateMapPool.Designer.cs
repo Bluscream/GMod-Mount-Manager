@@ -41,14 +41,15 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.moveUpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveDownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btn_create_addon = new System.Windows.Forms.Button();
             this.txt_shortname = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.txt_description = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.btn_baseimg = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.txt_longname = new System.Windows.Forms.TextBox();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.lst_maps)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -85,6 +86,7 @@
             this.txt_name.Size = new System.Drawing.Size(242, 20);
             this.txt_name.TabIndex = 2;
             this.txt_name.TextChanged += new System.EventHandler(this.txt_TextChanged);
+            this.txt_name.Enter += new System.EventHandler(this.txt_name_Enter);
             // 
             // txt_dev
             // 
@@ -128,7 +130,7 @@
             // 
             this.btn_create.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_create.Enabled = false;
-            this.btn_create.Location = new System.Drawing.Point(166, 453);
+            this.btn_create.Location = new System.Drawing.Point(134, 453);
             this.btn_create.Name = "btn_create";
             this.btn_create.Size = new System.Drawing.Size(74, 23);
             this.btn_create.TabIndex = 7;
@@ -155,24 +157,31 @@
             this.moveDownToolStripMenuItem,
             this.saveToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(143, 70);
             // 
             // moveUpToolStripMenuItem
             // 
             this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
-            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.moveUpToolStripMenuItem.Text = "Move Up";
             // 
             // moveDownToolStripMenuItem
             // 
             this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
-            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.moveDownToolStripMenuItem.Text = "Move Down";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // btn_create_addon
             // 
             this.btn_create_addon.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_create_addon.Location = new System.Drawing.Point(246, 453);
+            this.btn_create_addon.Location = new System.Drawing.Point(214, 453);
             this.btn_create_addon.Name = "btn_create_addon";
             this.btn_create_addon.Size = new System.Drawing.Size(80, 23);
             this.btn_create_addon.TabIndex = 9;
@@ -218,6 +227,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.btn_baseimg);
             this.splitContainer1.Panel1.Controls.Add(this.label5);
             this.splitContainer1.Panel1.Controls.Add(this.txt_longname);
             this.splitContainer1.Panel1.Controls.Add(this.txt_description);
@@ -240,6 +250,17 @@
             this.splitContainer1.SplitterDistance = 338;
             this.splitContainer1.TabIndex = 14;
             // 
+            // btn_baseimg
+            // 
+            this.btn_baseimg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_baseimg.Location = new System.Drawing.Point(300, 453);
+            this.btn_baseimg.Name = "btn_baseimg";
+            this.btn_baseimg.Size = new System.Drawing.Size(28, 23);
+            this.btn_baseimg.TabIndex = 15;
+            this.btn_baseimg.Text = "...";
+            this.btn_baseimg.UseVisualStyleBackColor = true;
+            this.btn_baseimg.Click += new System.EventHandler(this.btn_baseimg_Click);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -258,13 +279,6 @@
             this.txt_longname.Size = new System.Drawing.Size(242, 20);
             this.txt_longname.TabIndex = 14;
             this.txt_longname.TextChanged += new System.EventHandler(this.txt_TextChanged);
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // CreateMapPool
             // 
@@ -308,5 +322,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txt_longname;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.Button btn_baseimg;
     }
 }
