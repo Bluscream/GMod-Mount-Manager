@@ -1,12 +1,14 @@
 ﻿using GModMountManager.Classes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Windows.Forms;
 
 namespace GModMountManager.UI
@@ -19,17 +21,19 @@ namespace GModMountManager.UI
         private DirectoryInfo addonDir;
         private FileInfo addonFile;
         private Random random = new Random();
-        private Color RandomColor;
+
+        // private Color RandomColor;
         private List<ImageFile> baseImages = new List<ImageFile>();
+
         private bool ShownSuccessMessage = false;
 
         public CreateMapPool(Game game, DirectoryInfo gmodDir)
         {
             this.game = game; this.gmodDir = gmodDir;
             InitializeComponent();
-            RandomColor = Color.FromArgb(random.Next(200, 256), random.Next(200, 256), random.Next(200, 256));
-            txt_longname.Text = game.LongName;
             Text = $"Create Map Pool for {game.Name}";
+            // RandomColor = Color.FromArgb(random.Next(200, 256), random.Next(200, 256), random.Next(200, 256));
+            txt_longname.Text = game.LongName;
             btn_create.Enabled = addonDir.Exists;
             btn_upload.Enabled = addonFile.Exists;
         }
@@ -39,15 +43,24 @@ namespace GModMountManager.UI
             txt_shortname.Text = game.MountPath.Name;
             txt_name.Text = game.Name;
             txt_dev.Text = game.Developer;
-            txt_url.Text = game.Homepage;
+            if (game.Homepage != null)
+            {
+                txt_url.Text = game.Homepage;
+            }
+            else
+            {
+                if (!txt_name.Text.IsNullOrWhiteSpace()) txt_url.Text = "https://www.google.com/search?q=" + HttpUtility.UrlEncode(txt_name.Text);
+            }
 
             source = new BindingSource() { DataSource = game.Maps };
 
             lst_maps.AutoGenerateColumns = true;
             lst_maps.DataSource = source;
+            lst_maps.RowHeadersVisible = false;
             // lst_maps.Columns["Order"].ReadOnly = true;
             lst_maps.AutoResizeColumns();
             lst_maps.StretchLastColumn();
+            lst_maps.Sort(lst_maps.Columns["Order"], ListSortDirection.Ascending);
         }
 
         private void txt_TextChanged(object sender, EventArgs e)
@@ -67,10 +80,13 @@ namespace GModMountManager.UI
 
         private void btn_upload_Click(object sender, EventArgs e)
         {
+            Utils.StartProcess("crowbar.exe");
         }
 
         private void btn_create_Click(object sender, EventArgs e)
         {
+            Utils.StartProcess("crowbar.exe");
+            return;
             var file = Utils.saveFile($"Save {addonFile.Name}", addonFile.DirectoryName, fileName: addonFile.Name);
             file.Create(); // Todo: Change
             if (file is null || !file.Exists) return;
@@ -133,10 +149,10 @@ namespace GModMountManager.UI
         private void saveMapLists(List<string> maps = null)
         {
             maps = maps ?? game.GenerateMapList();
-            game.MapListPath.Backup(true);
+            if (game.MapListPath.Exists) game.MapListPath.Backup(true);
             game.MapListPath.WriteAllText(maps.Join("\n"));
 
-            game.MapCyclePath.Backup(true);
+            if (game.MapCyclePath.Exists) game.MapCyclePath.Backup(true);
             game.MapCyclePath.WriteAllText(game.GenerateMapCycle().Join("\n"));
         }
 
@@ -168,7 +184,7 @@ namespace GModMountManager.UI
             if (!mapname.IsNullOrWhiteSpace()) drawing.DrawString(mapname, font, textBrush, x: 10, y: height - 40);
 
             var orderBrush = new SolidBrush(Color.FromArgb(230, Color.Black));
-            if (order > 0)
+            if (order > -1)
             {
                 if (img.GetPixel(width - 30, height - 30).GetBrightness() < 0.4) orderBrush = new SolidBrush(orderBrush.Color.Invert());
                 var point = new PointF(x: width + 5, y: height + 5);

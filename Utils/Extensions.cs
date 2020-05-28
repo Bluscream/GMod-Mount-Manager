@@ -19,6 +19,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 
 namespace GModMountManager
@@ -216,6 +217,11 @@ namespace GModMountManager
 
         #region String
 
+        public static string GetDigits(this string input)
+        {
+            return new string(input.Where(char.IsDigit).ToArray());
+        }
+
         public static string Format(this string input, params string[] args)
         {
             return string.Format(input, args);
@@ -408,18 +414,19 @@ namespace GModMountManager
 
         #region Uri
 
-        private static readonly Regex QueryRegex = new Regex(@"[?&](\w[\w.]*)=([^?&]+)");
-
-        public static IReadOnlyDictionary<string, string> ParseQueryString(this Uri uri)
+        internal static bool ContainsKey(this NameValueCollection collection, string key)
         {
-            var match = QueryRegex.Match(uri.PathAndQuery);
-            var paramaters = new Dictionary<string, string>();
-            while (match.Success)
+            if (collection.Get(key) == null)
             {
-                paramaters.Add(match.Groups[1].Value, match.Groups[2].Value);
-                match = match.NextMatch();
+                return collection.AllKeys.Contains(key);
             }
-            return paramaters;
+
+            return true;
+        }
+
+        internal static NameValueCollection ParseQueryString(this Uri uri)
+        {
+            return HttpUtility.ParseQueryString(uri.Query);
         }
 
         public static void OpenIn(this Uri uri, string browser)
@@ -522,36 +529,36 @@ namespace GModMountManager
         #region Drawing
 
         public static Bitmap Resize(this Image image, int width, int height)
-{
-    var destRect = new Rectangle(0, 0, width, height);
-    var destImage = new Bitmap(width, height);
-
-    destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
-
-    using (var graphics = Graphics.FromImage(destImage))
-    {
-        graphics.CompositingMode = CompositingMode.SourceCopy;
-        graphics.CompositingQuality = CompositingQuality.HighQuality;
-        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        graphics.SmoothingMode = SmoothingMode.HighQuality;
-        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-        using (var wrapMode = new ImageAttributes())
         {
-            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-            graphics.DrawImage(image, destRect, 0, 0, image.Width,image.Height, GraphicsUnit.Pixel, wrapMode);
-        }
-    }
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
 
-    return destImage;
-}
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
 
         public static Color Invert(this Color input)
         {
-            return Color.FromArgb(input.ToArgb()^0xffffff);
+            return Color.FromArgb(input.ToArgb() ^ 0xffffff);
         }
 
-        #endregion
+        #endregion Drawing
 
         #region bool
 
