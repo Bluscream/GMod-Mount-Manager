@@ -1,5 +1,8 @@
 ﻿using Gameloop.Vdf;
+using Gameloop.Vdf.JsonConverter;
 using Gameloop.Vdf.Linq;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -22,26 +25,27 @@ namespace GModMountManager
             Logger.Info("Reading mounts from {}", file.FullName);
             var text = this.File.ReadAllText();
             var vp = VdfConvert.Deserialize(text, VdfSerializerSettings.Default);
-            Mounts = new BindingList<Mount>(vp.Value.Children().Select(x => new Mount(x.Value.Value<string>(), x.Key)).ToList());
+            Mounts = new BindingList<Mount>(vp.Value.Children().Select(x => new Mount(x.Value.Value<string>(), x.Key)).ToList()); // TODO: .Properties()
             Logger.Info("Read {} mounts successfully", Mounts.Count);
             // Logger.Trace(Mounts.ToJSON());
         }
 
-        public void Save()
+        public void Save(FileInfo file = null)
         {
-            var bakfile = File.Combine(".bak");
-            var str = ""; // VdfConvert.Serialize(VToken()); // TODO: https://github.com/shravan2x/Gameloop.Vdf/issues/19
-            if (str == File.ReadAllText())
+            file = file ?? File;
+            var bakfile = file.Combine(".bak");
+            var str = Extensions.toVdf(Mounts); // VdfConvert.Serialize(VToken()); // TODO: https://github.com/shravan2x/Gameloop.Vdf/issues/19
+            if (str == file.ReadAllText())
             {
                 Logger.Trace("File already contains proposed changes, discarding save..."); return;
             }
             if (!bakfile.Exists || bakfile.ReadAllText() != str)
             {
-                Logger.Trace("Backup file does not exist or does not contain current content, copying {} to {}", File.Name, bakfile.Name);
-                File.CopyTo(bakfile.FullName);
+                Logger.Trace("Backup file does not exist or does not contain current content, copying {} to {}", file.Name, bakfile.Name);
+                file.CopyTo(bakfile.FullName);
             }
-            Logger.Trace("Saving to {}", File.FullName);
-            File.WriteAllText(str);
+            Logger.Debug("Saving to {}", File.FullName);
+            file.WriteAllText(str);
         }
     }
 
@@ -60,7 +64,7 @@ namespace GModMountManager
             get { return _path; }
             set
             {
-                SourceMod = (value.Parent.Name == "sourcemods") ? true : false;
+                SourceMod = (value.Parent.Name.ToLower() == "sourcemods") ? true : false;
                 _path = value;
             }
         }

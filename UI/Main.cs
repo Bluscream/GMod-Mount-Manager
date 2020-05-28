@@ -17,6 +17,7 @@ namespace GModMountManager
     {
         private DirectoryInfo gmodDir;
         private MountsConfig cfg;
+        private MountsConfig disabledCfg;
         private BindingSource source;
 
         private void InvokeUI(Action a)
@@ -46,6 +47,7 @@ namespace GModMountManager
             }
             InitializeComponent();
             LoadMountsCFG(cfgFile);
+            // LoadMountsCFG(cfgFile.Directory.CombineFile("mount.disabled.cfg");
         }
 
         public void LoadMountsCFG(FileInfo cfgFile)
@@ -227,9 +229,8 @@ namespace GModMountManager
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Saving is not possible until \"https://github.com/shravan2x/Gameloop.Vdf/issues/18\" is solved", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            VObject rootValue = JObject.FromObject(cfg.Mounts).ToVdf();
-            Logger.Warn(VdfConvert.Serialize(new VProperty("mountcfg", rootValue)));
+            // MessageBox.Show("Saving is not possible until \"https://github.com/shravan2x/Gameloop.Vdf/issues/18\" is solved", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            cfg.Save(cfg.File.Directory.CombineFile("mount.test.cfg"));
         }
 
         private void createMapPoolToolStripMenuItem_Click(object sender, EventArgs e)

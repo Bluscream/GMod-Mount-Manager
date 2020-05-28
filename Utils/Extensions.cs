@@ -22,10 +22,28 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 
+using Gameloop.Vdf;
+using Gameloop.Vdf.JsonConverter;
+using Gameloop.Vdf.Linq;
+
 namespace GModMountManager
 {
     internal static class Extensions
     {
+        #region VDF
+
+        public static string toVdf(BindingList<Mount> Mounts)
+        {
+            var mountcfg = new Dictionary<string, string>();
+            foreach (var mount in Mounts)
+            {
+                mountcfg.Add(mount.Name, mount.Path.FullName);
+            }
+            return VdfConvert.Serialize(new VProperty("mountcfg", JToken.FromObject(mountcfg).ToVdf()), new VdfSerializerSettings { UsesEscapeSequences = false });
+        }
+
+        #endregion VDF
+
         #region Reflection
 
         public static Dictionary<string, object> ToDictionary(this object instanceToConvert)
@@ -132,6 +150,8 @@ namespace GModMountManager
             Utils.StartProcess("explorer.exe", null, dir.FullName.Quote());
         }
 
+        public static string PrintablePath(this FileSystemInfo file) => file.FullName.Replace(@"\\", @"\");
+
         #endregion DirectoryInfo
 
         #region FileInfo
@@ -169,7 +189,12 @@ namespace GModMountManager
             catch { }
         }
 
-        public static void WriteAllText(this FileInfo file, string text) => File.WriteAllText(file.FullName, text);
+        public static void WriteAllText(this FileInfo file, string text)
+        {
+            file.Directory.Create();
+            if (!file.Exists) file.Create().Close();
+            File.WriteAllText(file.FullName, text);
+        }
 
         public static string ReadAllText(this FileInfo file) => File.ReadAllText(file.FullName);
 
