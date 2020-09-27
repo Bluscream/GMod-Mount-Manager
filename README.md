@@ -1,6 +1,7 @@
 # GMod Mount Manager (GMMM)
 
 ## Download
+
 You can get the latest release [here](https://github.com/Bluscream/GMod-Mount-Manager/releases/)
 
 <details>
