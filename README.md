@@ -21,7 +21,7 @@ You can get the latest release [here](https://github.com/Bluscream/GMod-Mount-Ma
 - [ ] Publish GMA to Steam workshop (use [Crowbar](https://steamcommunity.com/sharedfiles/filedetails/?id=2003940195))
 
 <details>
-<summary>Screenshot(s)</summary>
+<summary><h2>Screenshot(s)</h12</summary>
 
 ![](https://i.imgur.com/fXI8300.png)
 ![](https://i.imgur.com/PbQuJrh.png)
