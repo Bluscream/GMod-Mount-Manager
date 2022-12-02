@@ -1,4 +1,4 @@
-# GMod Mount Manager (GMMM)
+# GMod Mount Manager (GMMM) ![GitHub all releases](https://img.shields.io/github/downloads/Bluscream/GMod-Mount-Manager/total)
 
 Tool for [Garry's Mod](https://store.steampowered.com/app/4000/Garrys_Mod/) to manage your mount.cfg file and create custom map pools from mounted games.
 
